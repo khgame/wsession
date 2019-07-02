@@ -2,8 +2,15 @@ import * as http from "http";
 import {Socket, Server} from "socket.io";
 
 import {UserSessionFactory} from "./userSessionFactory";
+import {UserSession} from "./userSession";
+import {ILRUOption} from "./chain/lru";
 
 type Port = number;
+
+export interface IWsOptions {
+    lru?: ILRUOption;
+    msg_queue_length?: number;
+}
 
 export class WSServer<TMessage> {
 
@@ -12,21 +19,21 @@ export class WSServer<TMessage> {
 
     constructor(server: http.Server | Port,
                 public readonly validateToken: (token: string) => Promise<string | undefined>,
-                public readonly eventHandler: (socket: Socket, uid: string, message: string) => void,
-                public readonly heartbeatTimeOut: number = 180000) {
-        this.initial(server);
+                public readonly eventHandler: (session: UserSession<TMessage>, message: string) => void,
+                public readonly opt?: IWsOptions) {
+        this.initial(server, opt);
     }
 
     private mockIdSeq = 0;
 
-    protected initial(server: http.Server | Port) {
+    protected initial(server: http.Server | Port, opt?: IWsOptions) {
         if (!require) {
             throw new Error("Cannot load WSServer. Try to install all required dependencies: socket.io, socket-controllers");
         }
 
         try {
             this.io = require("socket.io")(server);
-            this.sessions = new UserSessionFactory(this.io, this.heartbeatTimeOut);
+            this.sessions = new UserSessionFactory(this.io, opt ? opt.lru || {} : {});
         } catch (e) {
             throw new Error("socket.io package was not found installed. Try to install it: npm install socket.io --save");
         }
@@ -43,7 +50,10 @@ export class WSServer<TMessage> {
                 uid = `mock_uid_${this.mockIdSeq++}`;
             }
 
-            if (!this.sessions.create(socket.id, uid,null)) { // todo
+            if (!this.sessions.create(socket, uid, this.eventHandler,
+                    opt ? opt.msg_queue_length : -1
+                )
+            ) { // todo
                 socket.disconnect();
                 console.error(`try create session of uid ${uid} failed`);
                 return;
@@ -71,9 +81,6 @@ export class WSServer<TMessage> {
         const session = this.sessions.get(uid);
         if (!session) {
             console.error(`try emit message to uid ${uid}, but the session are not found`);
-        }
-        if (session.survive) {
-            console.error(`try emit message to uid ${uid}, but the session are not survive`);
         }
         session.emit("message", message); // todo: ???
         return this;

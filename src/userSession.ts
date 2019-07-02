@@ -1,34 +1,28 @@
 import {Server, Socket} from "socket.io";
 import {LRUNode} from "./chain/lru";
+import {LinkedLst} from "./chain/linkedLst";
+import {UserSessionFactory} from "./userSessionFactory";
 
 export type SessionMsgHandler<TMessage> = (session: UserSession<TMessage>, message: string) => void;
 
-export class UserSession<TMessage> extends LRUNode<UserSession<TMessage>> {
+export class UserSession<TMessage> extends LRUNode {
 
     lastHeartBeat: number;
 
+    msgQueue: LinkedLst<TMessage> = new LinkedLst<TMessage>();
+
     constructor(
-        protected readonly io: Server,
-        public readonly socketId: string,
+        protected readonly factory: UserSessionFactory<TMessage>,
+        public readonly socket: Socket,
         public readonly uid: string,
-        public readonly msgHandler: SessionMsgHandler<TMessage>
+        public readonly msgHandler: SessionMsgHandler<TMessage>,
+        public readonly max_queue_length: number = -1
     ) {
         super();
         this.heartBeat();
     }
 
-    public get socket(): Socket {
-        return this.io.sockets.sockets[this.socketId];
-    }
-
-    public get survive(): boolean {
-        return this.io && this.io.sockets && this.io.sockets.sockets.hasOwnProperty(this.socketId);
-    }
-
     public emit(event: string | symbol, ...args: any[]): boolean {
-        if (!this.survive) {
-            throw new Error("cannot emit event to a dead session.");
-        }
         return this.socket.emit(event, ...args);
     }
 
@@ -49,6 +43,15 @@ export class UserSession<TMessage> extends LRUNode<UserSession<TMessage>> {
     }
 
     private enqueueMsg(msg: TMessage) {
-
+        if (this.max_queue_length > 0 && this.msgQueue.length >= this.max_queue_length) {
+            this.factory.remove(this.uid);
+            const error = `too much message ${this.msgQueue.length}, socket ${this.uid} closed.`;
+            this.emit("SYSTEM_ERROR", {
+                error
+            });
+            console.error(error);
+            return;
+        }
+        this.msgQueue.push(msg);
     }
 }

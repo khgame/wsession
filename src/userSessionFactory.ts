@@ -1,24 +1,27 @@
 import {SessionMsgHandler, UserSession} from "./userSession";
-import {Server} from "socket.io";
-import {LRULst} from "./chain/lru";
+import {Server, Socket} from "socket.io";
+import {ILRUOption, LRULst} from "./chain/lru";
 
 export class UserSessionFactory<TMessage> {
 
     protected sessionMap: { [uid: string]: UserSession<TMessage> } = {};
-    protected sessionLRU: LRULst<UserSession<TMessage>>;
+    protected sessionLRU: LRULst;
 
     constructor(
-        protected readonly io: Server,
-        public readonly ttl_ms: number) {
+        public readonly io: Server,
+        public readonly opt: ILRUOption) {
 
-        this.sessionLRU = new LRULst<UserSession<TMessage>>(
+        this.sessionLRU = new LRULst(
             (session: UserSession<TMessage>) => {
-                if (session.survive) {
+                if (session.socket) {
                     session.socket.disconnect();
                 }
                 delete this.sessionMap[session.uid];
             }, {
-                ttl_ms: ttl_ms
+                ...opt,
+                ... {
+                    ttl_ms: 12000, // ms
+                }
             }
         );
     }
@@ -31,13 +34,14 @@ export class UserSessionFactory<TMessage> {
         return this.sessionMap[uid];
     }
 
-    create(socketId: string,
+    create(socket: Socket,
            uid: string,
-           handler: SessionMsgHandler<TMessage>
+           handler: SessionMsgHandler<TMessage>,
+           max_queue_length: number = -1
     ): boolean { // todo: lb ?
         this.remove(uid);
-        const session = this.sessionMap[uid] = new UserSession(this.io, socketId, uid, handler);
-        this.sessionLRU.append(session);
+        const session = this.sessionMap[uid] = new UserSession(this, socket, uid, handler, max_queue_length);
+        this.sessionLRU.push(session);
         return true; // when new session come in, evictInactive
     }
 
@@ -46,7 +50,7 @@ export class UserSessionFactory<TMessage> {
         if (!session) {
             return false;
         }
-        this.sessionLRU.remove(session);
+        this.sessionLRU.del(session);
         return true;
     }
 
@@ -57,5 +61,7 @@ export class UserSessionFactory<TMessage> {
         }
         return this.sessionLRU.heartBeat(session); // when session heart beats, evictInactive
     }
+
+
 
 }

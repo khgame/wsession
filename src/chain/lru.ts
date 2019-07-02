@@ -5,7 +5,7 @@ export interface ILRUOption {
     max_length?: number;
 }
 
-export class LRUNode<T> extends Node {
+export class LRUNode extends Node {
     public latestActTimestamp: number;
 
     constructor() {
@@ -19,26 +19,26 @@ export class LRUNode<T> extends Node {
     }
 }
 
-export class LRULst<T> extends Chain {
+export class LRULst extends Chain {
 
     constructor(
-        public readonly onRemove: (node: LRUNode<T>) => void,
+        public readonly onRemove: (node: LRUNode) => void,
         public readonly opt: ILRUOption = {}) {
         super();
     }
 
     public popHead(){
-        return this.remove(this.head as LRUNode<T>);
+        return this.del(this.head as LRUNode);
     }
 
-    public remove(node: LRUNode<T>): Node {
-        super.remove(node);
+    public del(node: LRUNode): LRUNode {
+        this.remove(node);
         this.onRemove(node);
         return node;
     }
 
-    public append(node: LRUNode<T>): Node {
-        super.append(node);
+    public push(node: LRUNode): LRUNode {
+        this.append(node);
 
         node.pulse(); // update time
         if (this.opt
@@ -51,7 +51,7 @@ export class LRULst<T> extends Chain {
         return node;
     }
 
-    public heartBeat(node: LRUNode<T>) : boolean {
+    public heartBeat(node: LRUNode) : boolean {
         if (!node) {
             return false;
         }
@@ -64,7 +64,7 @@ export class LRULst<T> extends Chain {
             && this.opt.ttl_ms > 0
         ) {
             const now = Date.now();
-            while (this.head && now > (this.head as LRUNode<T>).latestActTimestamp + this.opt.ttl_ms) {
+            while (this.head && now > (this.head as LRUNode).latestActTimestamp + this.opt.ttl_ms) {
                 this.popHead();
             }
         } // when session heart beats, evict inactive

@@ -11,7 +11,7 @@ export class Chain {
 
     public length: number = 0;
 
-    public remove(node: Node): Node {
+    protected remove(node: Node): Node {
         const {prev, next} = node;
         if (prev) {
             prev.next = next;
@@ -33,7 +33,7 @@ export class Chain {
         return node;
     }
 
-    public append(node: Node): Node {
+    protected append(node: Node): Node {
         if (node.prev || node.next) {
             throw new Error(`the node is already in the list.`);
         }
