@@ -1,5 +1,5 @@
 import {Server, Socket} from "socket.io";
-import {LRUNode} from "./linkedList/linkedListNode";
+import {LRUNode} from "./lru";
 
 
 export class UserSession extends LRUNode<UserSession> {

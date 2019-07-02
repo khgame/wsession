@@ -1,6 +1,6 @@
 import {UserSession} from "./userSession";
 import {Server} from "socket.io";
-import {LRUList} from "./linkedList/linkedListNode";
+import {LRUList} from "./lru";
 
 export class UserSessionFactory {
 
