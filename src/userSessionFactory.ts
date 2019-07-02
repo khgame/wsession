@@ -16,6 +16,7 @@ export class UserSessionFactory<TMessage> {
                 if (session.socket) {
                     session.socket.disconnect();
                 }
+                session.alive = false;
                 delete this.sessionMap[session.uid];
             }, {
                 ...opt,

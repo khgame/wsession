@@ -16,7 +16,7 @@ export class LinkedLst<T> extends Chain {
         this.append(new LLNode<T>(payload));
     }
 
-    public pop(payload: T): T{
+    public pop(): T{
         return (this.remove(this.head as LLNode<T>) as LLNode<T>).payload;
     }
 
