@@ -5,7 +5,7 @@ export interface ILRUOption {
     max_length?: number;
 }
 
-export class LRUNode<T> extends Node<T> {
+export class LRUNode<T> extends Node {
     public latestActTimestamp: number;
 
     constructor() {
@@ -19,7 +19,7 @@ export class LRUNode<T> extends Node<T> {
     }
 }
 
-export class LRUList<T> extends Chain<T> {
+export class LRULst<T> extends Chain {
 
     constructor(
         public readonly onRemove: (node: LRUNode<T>) => void,
@@ -28,16 +28,16 @@ export class LRUList<T> extends Chain<T> {
     }
 
     public popHead(){
-        this.remove(this.head as LRUNode<T>);
+        return this.remove(this.head as LRUNode<T>);
     }
 
-    public remove(node: LRUNode<T>): this {
+    public remove(node: LRUNode<T>): Node {
         super.remove(node);
         this.onRemove(node);
-        return this;
+        return node;
     }
 
-    public append(node: LRUNode<T>): this {
+    public append(node: LRUNode<T>): Node {
         super.append(node);
 
         node.pulse(); // update time
@@ -48,7 +48,7 @@ export class LRUList<T> extends Chain<T> {
             this.popHead();
         }
 
-        return this;
+        return node;
     }
 
     public heartBeat(node: LRUNode<T>) : boolean {
@@ -56,7 +56,8 @@ export class LRUList<T> extends Chain<T> {
             return false;
         }
 
-        this.remove(node).append(node);
+        this.remove(node);
+        this.append(node);
 
         if (this.opt
             && this.opt.ttl_ms !== undefined
