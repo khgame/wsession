@@ -1,0 +1,45 @@
+{
+  "name": "wsession",
+  "version": "0.0.1",
+  "description": "",
+  "main": "lib/index.js",
+  "scripts": {
+    "prepublishOnly": "npm run build",
+    "build": "rimraf ./lib && npx tsc",
+    "lint": "npx tslint --fix --project .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "get-port": "^5.0.0",
+    "ip": "^1.1.5",
+    "socket.io": "^2.2.0"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.7",
+    "@types/socket.io": "^2.1.2",
+    "chai": "^4.2.0",
+    "cross-env": "^5.2.0",
+    "mocha": "^6.1.4",
+    "nodemon": "^1.19.1",
+    "rimraf": "^2.6.3",
+    "ts-node": "^8.3.0",
+    "tslint": "^5.18.0",
+    "typescript": "^3.5.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/khgame/wsession.git"
+  },
+  "keywords": [
+    "websocket",
+    "session",
+    "khgame"
+  ],
+  "author": "bagaking <kinghand@foxmail.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/khgame/wsession/issues"
+  },
+  "homepage": "https://github.com/khgame/wsession#readme"
+}
