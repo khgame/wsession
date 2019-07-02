@@ -1,5 +1,5 @@
 {
-  "name": "wsession",
+  "name": "@khgame/wsession",
   "version": "0.0.1",
   "description": "",
   "main": "lib/index.js",
