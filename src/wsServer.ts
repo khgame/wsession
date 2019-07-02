@@ -1,18 +1,18 @@
 import * as http from "http";
-import {Socket, Server}  from "socket.io";
+import {Socket, Server} from "socket.io";
 
 import {UserSessionFactory} from "./userSessionFactory";
 
 type Port = number;
 
-export class WSServer {
+export class WSServer<TMessage> {
 
-    protected sessions: UserSessionFactory;
+    protected sessions: UserSessionFactory<TMessage>;
     protected io: Server;
 
     constructor(server: http.Server | Port,
                 public readonly validateToken: (token: string) => Promise<string | undefined>,
-                public readonly callback: (socket: Socket, uid: string, message: string) => void,
+                public readonly eventHandler: (socket: Socket, uid: string, message: string) => void,
                 public readonly heartbeatTimeOut: number = 180000) {
         this.initial(server);
     }
@@ -43,21 +43,22 @@ export class WSServer {
                 uid = `mock_uid_${this.mockIdSeq++}`;
             }
 
-            this.sessions.create(socket.id, uid);
+            if (!this.sessions.create(socket.id, uid,null)) { // todo
+                socket.disconnect();
+                console.error(`try create session of uid ${uid} failed`);
+                return;
+            }
+            const session = this.sessions.get(uid);
             socket.emit("login", "SUCCESS");
 
-            socket.on("message", (message: string) => {
-                this.callback(socket, uid, message);
+            socket.on("message", (...messages: any[]) => {
+                session.onMessage(messages);
+                this.sessions.heartBeat(uid);
+                // this.sessions.get(uid).emit("heartbeat"); // todo: test client behavior
             });
 
             socket.on("disconnect", (message: string) => {
                 this.sessions.remove(uid);
-            });
-
-            socket.on("heartbeat", (message: string) => {
-                if (this.sessions.heartBeat(uid)) {
-                    this.sessions.get(uid).emit("heartbeat");
-                }
             });
 
             console.log(`ws connected, socket id : ${socket.id}`);

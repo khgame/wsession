@@ -1,18 +1,18 @@
-import {UserSession} from "./userSession";
+import {SessionMsgHandler, UserSession} from "./userSession";
 import {Server} from "socket.io";
-import {LRUList} from "./lru";
+import {LRULst} from "./chain/lru";
 
-export class UserSessionFactory {
+export class UserSessionFactory<TMessage> {
 
-    protected sessionMap: { [uid: string]: UserSession } = {};
-    protected sessionLRU: LRUList<UserSession>;
+    protected sessionMap: { [uid: string]: UserSession<TMessage> } = {};
+    protected sessionLRU: LRULst<UserSession<TMessage>>;
 
     constructor(
         protected readonly io: Server,
         public readonly ttl_ms: number) {
 
-        this.sessionLRU = new LRUList<UserSession>(
-            (session: UserSession) => {
+        this.sessionLRU = new LRULst<UserSession<TMessage>>(
+            (session: UserSession<TMessage>) => {
                 if (session.survive) {
                     session.socket.disconnect();
                 }
@@ -27,16 +27,16 @@ export class UserSessionFactory {
         return this.sessionMap.hasOwnProperty(uid);
     }
 
-    get(uid: string): UserSession {
+    get(uid: string): UserSession<TMessage> {
         return this.sessionMap[uid];
     }
 
-    create(socketId: string, uid: string): boolean {
-        if (this.has(uid)) { // remove the old session
-            this.remove(uid);
-        }
-        const session = this.sessionMap[uid] = new UserSession(this.io, socketId, uid);
-
+    create(socketId: string,
+           uid: string,
+           handler: SessionMsgHandler<TMessage>
+    ): boolean { // todo: lb ?
+        this.remove(uid);
+        const session = this.sessionMap[uid] = new UserSession(this.io, socketId, uid, handler);
         this.sessionLRU.append(session);
         return true; // when new session come in, evictInactive
     }
