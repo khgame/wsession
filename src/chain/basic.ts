@@ -29,7 +29,7 @@ export class Chain {
             throw new Error(`the node to remove is not in the list.`);
         }
         node.prev = node.next = null;
-        length -= 1;
+        this.length -= 1;
         return node;
     }
 
@@ -45,7 +45,7 @@ export class Chain {
         } else {
             this.head = this.tail = node;
         }
-        length += 1;
+        this.length += 1;
         return node;
     }
 }
