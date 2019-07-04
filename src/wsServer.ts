@@ -2,7 +2,7 @@ import * as http from "http";
 import {Socket, Server} from "socket.io";
 
 import {UserSessionFactory} from "./userSessionFactory";
-import {UserSession} from "./userSession";
+import {SessionMsgHandler, UserSession} from "./userSession";
 import {ILRUOption} from "./chain/lru";
 
 type Port = number;
@@ -19,7 +19,7 @@ export class WSServer<TMessage> {
 
     constructor(server: http.Server | Port,
                 public readonly validateToken: (token: string) => Promise<string | undefined>,
-                public readonly eventHandler: (session: UserSession<TMessage>, message: string) => void,
+                public readonly eventHandler: SessionMsgHandler<TMessage>,
                 public readonly opt?: IWsOptions) {
         this.initial(server, opt);
     }
