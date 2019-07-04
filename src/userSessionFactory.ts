@@ -13,11 +13,11 @@ export class UserSessionFactory<TMessage> {
 
         this.sessionLRU = new LRULst(
             (session: UserSession<TMessage>) => {
+                delete this.sessionMap[session.uid];
                 if (session.socket) {
                     session.socket.disconnect();
                 }
                 session.alive = false;
-                delete this.sessionMap[session.uid];
             }, {
                 ...opt,
                 ... {

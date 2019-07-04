@@ -57,7 +57,7 @@ export class LRULst extends Chain {
         }
 
         this.remove(node);
-        this.append(node);
+        this.push(node);
 
         if (this.opt
             && this.opt.ttl_ms !== undefined
