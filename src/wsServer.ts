@@ -96,6 +96,10 @@ export class WSServer<TMessage> {
         return this;
     }
 
+    public getConnectCount(){
+        return this.sessions.getConnectCount();
+    }
+
     // private checkStatus() {
     //     this.sessions.evictInactive();
     // }

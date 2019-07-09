@@ -63,6 +63,8 @@ export class UserSessionFactory<TMessage> {
         return this.sessionLRU.heartBeat(session); // when session heart beats, evictInactive
     }
 
-
+    public getConnectCount(){
+        return Object.keys(this.sessionMap).length;
+    }
 
 }
