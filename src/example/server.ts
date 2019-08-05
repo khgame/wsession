@@ -1,6 +1,5 @@
 import { Api } from "./api";
 import { turtle } from "@khgame/turtle/lib";
-import * as Path from "path";
 
 const conf = {
     "name": "wsession",

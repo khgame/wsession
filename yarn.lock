@@ -25,6 +25,11 @@
   dependencies:
     regenerator-runtime "^0.13.2"
 
+"@khgame/err@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.npm.taobao.org/@khgame/err/download/@khgame/err-0.1.0.tgz?cache=0&sync_timestamp=1565022645479&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40khgame%2Ferr%2Fdownload%2F%40khgame%2Ferr-0.1.0.tgz#42ace3d9cc6b29b8a49fbab67136a60c797665b5"
+  integrity sha1-Qqzj2cxrKbikn7q2cTamDHl2ZbU=
+
 "@khgame/jsonrpc@^0.1.7":
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/@khgame/jsonrpc/-/jsonrpc-0.1.7.tgz#1c335bcb177b3bd940018944eb3ba9b2b2d5d7c1"
@@ -1961,6 +1966,18 @@ keyv@^3.0.0:
   dependencies:
     json-buffer "3.0.0"
 
+kht@^0.0.11:
+  version "0.0.11"
+  resolved "https://registry.npm.taobao.org/kht/download/kht-0.0.11.tgz?cache=0&sync_timestamp=1565024455660&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fkht%2Fdownload%2Fkht-0.0.11.tgz#7b129ac014f2705419caa66f69f0c75fb08125bd"
+  integrity sha1-exKawBTycFQZyqZvafDHX7CBJb0=
+  dependencies:
+    "@babel/runtime" "^7.3.1"
+    child_process "^1.0.2"
+    fs-extra "^7.0.1"
+    node-rsa "^1.0.5"
+    path "^0.12.7"
+    readline "^1.3.0"
+
 kht@^0.0.9:
   version "0.0.9"
   resolved "https://registry.yarnpkg.com/kht/-/kht-0.0.9.tgz#ce33b5f4a1b10bb02d9deae8b6cf0ed864c346d3"
@@ -3110,30 +3127,10 @@ socket.io-adapter@~1.1.0:
   resolved "https://registry.npm.taobao.org/socket.io-adapter/download/socket.io-adapter-1.1.1.tgz#2a805e8a14d6372124dd9159ad4502f8cb07f06b"
   integrity sha1-KoBeihTWNyEk3ZFZrUUC+MsH8Gs=
 
-socket.io-client@2.2.0:
+socket.io-client@2.2.0, socket.io-client@^2.2.0:
   version "2.2.0"
   resolved "https://registry.npm.taobao.org/socket.io-client/download/socket.io-client-2.2.0.tgz#84e73ee3c43d5020ccc1a258faeeb9aec2723af7"
   integrity sha1-hOc+48Q9UCDMwaJY+u65rsJyOvc=
-  dependencies:
-    backo2 "1.0.2"
-    base64-arraybuffer "0.1.5"
-    component-bind "1.0.0"
-    component-emitter "1.2.1"
-    debug "~3.1.0"
-    engine.io-client "~3.3.1"
-    has-binary2 "~1.0.2"
-    has-cors "1.1.0"
-    indexof "0.0.1"
-    object-component "0.0.3"
-    parseqs "0.0.5"
-    parseuri "0.0.5"
-    socket.io-parser "~3.3.0"
-    to-array "0.1.4"
-
-socket.io-client@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/socket.io-client/-/socket.io-client-2.2.0.tgz#84e73ee3c43d5020ccc1a258faeeb9aec2723af7"
-  integrity sha512-56ZrkTDbdTLmBIyfFYesgOxsjcLnwAKoN4CiPyTVkMQj3zTUh0QAx3GbvIvLpFEOvQWu92yyWICxB0u7wkVbYA==
   dependencies:
     backo2 "1.0.2"
     base64-arraybuffer "0.1.5"

@@ -2,14 +2,12 @@ import "reflect-metadata";
 import * as Koa from "koa";
 import {Context} from "koa";
 import {createServer, Server} from "http";
-import {genLogger, IApi, APIRunningState} from "@khgame/turtle";
-import {Action, useContainer, useKoaServer} from "routing-controllers";
+import {IApi, APIRunningState} from "@khgame/turtle";
+import {useContainer, useKoaServer} from "routing-controllers";
 import {Container} from "typedi";
-import { WebSocket } from "./wsServer";
+import {WSvr} from "../core";
+import {TestController} from "./testController";
 
-interface IControllers {
-    [key: string]: any;
-}
 
 export class Api implements IApi {
 
@@ -67,7 +65,10 @@ export class Api implements IApi {
             controllers: [],
             defaultErrorHandler: false,
         });
-        new WebSocket(this.server);
+        new WSvr(this.server,
+            [TestController],
+            async a => a
+        );
         this.runningState = APIRunningState.PREPARED;
     }
 

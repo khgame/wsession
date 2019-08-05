@@ -8,14 +8,16 @@
     "build": "rimraf ./lib && npx tsc",
     "lint": "npx tslint --fix --project .",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:api":"npm run build && node lib/test/server.js",
-    "start:client":"npx ts-node src/test/wsClient.ts"
+    "start:api": "ts-node src/example/server.ts",
+    "start:client": "npx ts-node src/example/wsClient.ts"
   },
   "dependencies": {
+    "@khgame/err": "^0.1.0",
     "@khgame/turtle": "^0.0.66",
     "@types/koa": "^2.0.49",
     "get-port": "^5.0.0",
     "ip": "^1.1.5",
+    "kht": "^0.0.11",
     "koa": "^2.7.0",
     "koa-bodyparser": "^4.2.1",
     "koa-router": "^8.0.0-alpha.1",

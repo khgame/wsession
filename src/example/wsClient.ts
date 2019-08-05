@@ -46,6 +46,15 @@ export class WSClient {
 }
 
 // TODO: add function
-const d = new WSClient("http://10.1.100.223:9999", { query: { token: "hehe" } });
-d.emit("message", "aaa");
+const d = new WSClient("http://localhost:9999", {query: {token: "hehe"}});
+console.log("send 1");
+d.emit("message", {code: 1, seq: 1});
+console.log("send 2");
+d.emit("message", {code: 2, seq: 2});
+console.log("send 3");
+d.emit("message", {code: 3, seq: 3, data: {arg1: "HelloWorld!"}});
+console.log("send 4");
+d.emit("message", {code: 4, seq: 4, data: {m: "this is a data"}});
+console.log("expect 5");
+d.on("message", (msg: any) => console.log("rsp", msg))
 console.log("success");
