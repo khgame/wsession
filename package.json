@@ -1,6 +1,6 @@
 {
-  "name": "@khgame/wsession",
-  "version": "0.0.3",
+  "name": "wsession",
+  "version": "0.1.0",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
