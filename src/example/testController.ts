@@ -1,5 +1,13 @@
 import {WS, WSCtx, WSHandler, WSParam} from "../core";
-import {WSContext} from "../core/context";
+import {WSContext} from "../core";
+
+enum MSG_CODE {
+    SC_MSG1 = 1,
+    SC_MSG2 = 2,
+    SC_MSG3 = 3,
+    SC_MSG4 = 4,
+    CS_MSG4 = 5,
+}
 
 @WS()
 export class TestController {
@@ -7,17 +15,17 @@ export class TestController {
     /**
      * 无参数调用的示例, 监听事件 1
      */
-    @WSHandler(1)
+    @WSHandler(MSG_CODE.SC_MSG1)
     async method1() {
-        console.log("method 1");
+        console.log("SC_MSG1 received");
     }
 
     /**
      * 无参数调用的示例, 监听事件 2
      */
-    @WSHandler(2)
+    @WSHandler(MSG_CODE.SC_MSG2)
     async method2() {
-        console.log("method 2");
+        console.log("SC_MSG2 received");
     }
 
     /**
@@ -26,10 +34,11 @@ export class TestController {
      * 用 Ctx 对应 Context 对象
      * 未指定回报消息号, 返回值不会发送给客户端
      */
-    @WSHandler(3)
+    @WSHandler(MSG_CODE.SC_MSG3)
     async method3(@WSParam("arg1") input: number, @WSCtx() ctx: WSContext) {
-        console.log("method 3");
-        console.log("inputs", input, ctx);
+        console.log("SC_MSG3 received");
+        console.log("input is", input);
+        console.log("context is", ctx);
         return input;
     }
 
@@ -39,9 +48,9 @@ export class TestController {
      * 参数固定为 data 和 context
      * 有回报消息号时, 返回值会被发送给客户端
      */
-    @WSHandler(4, 5)
+    @WSHandler(MSG_CODE.SC_MSG4, MSG_CODE.CS_MSG4)
     async method4(data: { m: string }, ctx: WSContext) {
-        console.log("method 4");
+        console.log("SC_MSG4 received");
         return data.m;
     }
 
