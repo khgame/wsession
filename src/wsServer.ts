@@ -7,6 +7,11 @@ import {ILRUOption} from "./chain/lru";
 
 type Port = number;
 
+export enum EVENT_NAMES {
+    LOGIN = "login",
+    MSG = "message",
+}
+
 export interface IWsOptions {
     lru?: ILRUOption;
     msg_queue_length?: number;
@@ -46,7 +51,7 @@ export class WSServer<TMessage> {
             let uid = await this.validateToken(token);
 
             if (!uid) {
-                socket.emit("login", "FAILED");
+                socket.emit(EVENT_NAMES.LOGIN, "FAILED");
                 uid = `mock_uid_${this.mockIdSeq++}`;
             }
 
@@ -59,9 +64,9 @@ export class WSServer<TMessage> {
                 return;
             }
             const session = this.sessions.get(uid);
-            socket.emit("login", "SUCCESS");
+            socket.emit(EVENT_NAMES.LOGIN, "SUCCESS");
 
-            socket.on("message", (...messages: any[]) => {
+            socket.on(EVENT_NAMES.MSG, (...messages: any[]) => {
                 session.onMessage(messages);
                 this.sessions.heartBeat(uid);
                 // this.sessions.get(uid).emit("heartbeat"); // todo: test client behavior
@@ -82,7 +87,7 @@ export class WSServer<TMessage> {
         if (!session) {
             console.error(`try emit message to uid ${uid}, but the session are not found`);
         }
-        session.emit("message", message); // todo: ???
+        session.emit(EVENT_NAMES.MSG, message); // todo: ???
         return this;
     }
 
@@ -92,7 +97,7 @@ export class WSServer<TMessage> {
     }
 
     public emitToAll(message: any): this {
-        this.io.emit(message);
+        this.io.emit(EVENT_NAMES.MSG, message);
         return this;
     }
 
