@@ -4,7 +4,7 @@ import {UserSession} from "../userSession";
 import {WSMeta} from "./meta/wsMeta";
 import {HandlerMeta} from "./meta/handlerMeta";
 import {CAssert, CError} from "@khgame/err";
-import {IMsg} from "./const";
+import {IMsg, MSG_STATUS} from "./const";
 import {WSContext} from "./context";
 import {ParamMeta} from "./meta/paramMeta";
 
@@ -31,6 +31,20 @@ export class WSvr {
             .forEach((handlerMeta: HandlerMeta) => {
                 this.handlers[handlerMeta.code] = handlerMeta;
             });
+    }
+
+    public sendMsg(uid: string, code: number, data: any) {
+        const rep: IMsg = {
+            code, data, status: MSG_STATUS.ok, timestamp: Date.now()
+        };
+        this.wsServer.emit(uid, rep);
+    }
+
+    public sendMsgToAll(code: number, data: any) {
+        const rep: IMsg = {
+            code, data, status: MSG_STATUS.ok, timestamp: Date.now()
+        };
+        this.wsServer.emitToAll(rep);
     }
 
     public async dispatch(session: UserSession<any>, msg: IMsg) {
@@ -62,8 +76,8 @@ export class WSvr {
         let result: any = undefined;
         const ctx = new WSContext(
             session,
-            session.uid,
-            msg
+            msg,
+            this.sendMsg.bind(this)
         );
 
         console.log(">> msg:", msg, matchedArgs.length);
