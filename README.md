@@ -158,10 +158,10 @@ You can use `@WSCtx` decorator to define argument which are inject as context.
 // ...
 
 @WSHandler(MSG_CODE.CS_MSG3)
-    async method3(@WSParam("arg1") a: number, @WSCtx() ctx: WSContext, @WSParam("arg2") b: number) {
-        console.log("context is", ctx);
-        return input;
-    }
+async method3(@WSParam("arg1") a: number, @WSCtx() ctx: WSContext, @WSParam("arg2") b: number) {
+    console.log("context is", ctx);
+    return input;
+}
 ```
 
 
