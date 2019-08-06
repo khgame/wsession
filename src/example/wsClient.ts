@@ -55,6 +55,9 @@ console.log("send 3");
 d.emit("message", {code: 3, seq: 3, data: {arg1: "HelloWorld!"}});
 console.log("send 4");
 d.emit("message", {code: 4, seq: 4, data: {m: "this is a data"}});
-console.log("expect 5");
+console.log("expect 14");
 d.on("message", (msg: any) => console.log("rsp", msg))
+console.log("send 5");
+d.emit("message", {code: 5, seq: 4, data: {m: "this is a data"}});
+console.log("expect 20");
 console.log("success");
