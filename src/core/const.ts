@@ -1,4 +1,9 @@
 
+export enum MsgStatus {
+    ok = "ok",
+    error = "error"
+}
+
 export interface IError {
     code: number;
     msg: string;
@@ -7,7 +12,7 @@ export interface IError {
 export interface IMsg {
     code: number;
     seq?: number;
-    status?: "ok" | "error";
+    status?: MsgStatus;
     data?: any;
     error?: IError;
     timestamp?: number;

@@ -1,17 +1,21 @@
 import {UserSession} from "../userSession";
-import {IError, IMsg} from "./const";
+import {IError, IMsg, MsgStatus} from "./const";
 import {CError} from "@khgame/err";
 
 export class WSContext {
 
     constructor(
         public session: UserSession<IMsg>,
-        public uid: string,
+        public notice: (uid: string, msg: string) => void,
         public msg: IMsg
     ) {
     }
 
-    public response(code: number, data: any, status?: "ok" | "error", error?: IError) {
+    public get uid() : string {
+        return this.session.uid;
+    }
+
+    public response(code: number, data: any, status?: MsgStatus, error?: IError) {
         const rep: IMsg = {
             code,
             seq: this.msg.seq,
@@ -24,11 +28,11 @@ export class WSContext {
     }
 
     public rspOK(code: number, data: any) {
-        this.response(code, data, "ok");
+        this.response(code, data, MsgStatus.ok);
     }
 
     public rspERR(code: number, error: IError) {
-        this.response(code, undefined, "ok", error);
+        this.response(code, undefined, MsgStatus.error, error);
     }
 
     public async doFunc(func: () => Promise<any>,
