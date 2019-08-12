@@ -1,3 +1,5 @@
+import {IWSOption} from "../decorator";
+
 export class WSMeta {
 
     static injectTable: Map<Function, any> = new Map<Function, any>();
@@ -6,7 +8,7 @@ export class WSMeta {
 
     static create(
         targetClass: Function,
-        option?: any,
+        option?: IWSOption,
     ) {
         const targetMeta = new WSMeta(targetClass, option);
         this.targetTable.set(targetClass, targetMeta);
@@ -32,7 +34,7 @@ export class WSMeta {
 
     constructor(
         public targetClass: Function,
-        option?: any,
+        protected readonly option?: IWSOption,
     ) {
     }
 
@@ -40,7 +42,9 @@ export class WSMeta {
 
     get instance() {
         if (!this._instance) {
-            this._instance = WSMeta.injectTable.get(this.targetClass) || new (this.targetClass as any)();
+            this._instance = WSMeta.injectTable.get(this.targetClass)
+                || this.option.getInstance()
+                || new (this.targetClass as any)();
         }
         return this._instance;
     }

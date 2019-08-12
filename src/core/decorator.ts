@@ -2,8 +2,12 @@ import {WSMeta} from "./meta/wsMeta";
 import {ParamMeta} from "./meta/paramMeta";
 import {HandlerMeta} from "./meta/handlerMeta";
 
+export interface IWSOption{
+    getInstance: () => any,
+    [key: string]: any,
+}
 
-export function WS(option?: any) {
+export function WS(option?: IWSOption) {
     return (constructor: Function) => {
         WSMeta.create(constructor, option);
     };
