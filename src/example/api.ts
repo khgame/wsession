@@ -6,7 +6,12 @@ import {IApi, APIRunningState} from "@khgame/turtle";
 import {useContainer, useKoaServer} from "routing-controllers";
 import {Container} from "typedi";
 import {WSvr} from "../core";
-import {HardInjectTestController, SoftInjectTestController, TestController} from "./testController";
+import {
+    HardInjectTestController,
+    InjectFieldTestController,
+    SoftInjectTestController,
+    TestController
+} from "./testController";
 
 
 export class Api implements IApi {
@@ -67,7 +72,7 @@ export class Api implements IApi {
         });
         new HardInjectTestController("hard");
         new WSvr(this.server,
-            [TestController, HardInjectTestController, SoftInjectTestController],
+            [TestController, HardInjectTestController, SoftInjectTestController, InjectFieldTestController],
             async a => a
         );
         this.runningState = APIRunningState.PREPARED;

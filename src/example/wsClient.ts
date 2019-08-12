@@ -64,6 +64,8 @@ console.log("send 6");
 d.emit("message", {code: 6, seq: 6, data: {m: "this is a data"}});
 console.log("send 7");
 d.emit("message", {code: 7, seq: 7, data: {m: "this is a data"}});
+console.log("send 8");
+d.emit("message", {code: 8, seq: 8, data: {m: "this is a data"}});
 
 console.log("expect 20");
 console.log("success");

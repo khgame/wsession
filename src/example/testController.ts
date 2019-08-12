@@ -1,5 +1,6 @@
-import {WS, WSCtx, WSHandler, WSMeta, WSParam} from "../core";
+import {WSInject, WS, WSCtx, WSHandler, WSMeta, WSParam} from "../core";
 import {WSContext} from "../core";
+import {Inject} from "typedi";
 
 enum MSG_CODE {
     CS_MSG1 = 1,
@@ -9,6 +10,7 @@ enum MSG_CODE {
     CS_MSG5 = 5,
     CS_MSG6 = 6,
     CS_MSG7 = 7,
+    CS_MSG8 = 8,
 
     SC_MSG4 = 14,
     SC_NOTICE = 20,
@@ -64,8 +66,8 @@ export class TestController {
      */
     @WSHandler(MSG_CODE.CS_MSG5)
     async method5(data: { m: string }, ctx: WSContext) {
-        console.log("CS_MSG4 received");
-        ctx.notice("hehe", MSG_CODE.SC_NOTICE, { d: "notice data", m: data.m });
+        console.log("CS_MSG5 received");
+        ctx.notice("hehe", MSG_CODE.SC_NOTICE, {d: "notice data", m: data.m});
         return data.m;
     }
 
@@ -84,13 +86,12 @@ export class HardInjectTestController {
      */
     @WSHandler(MSG_CODE.CS_MSG6)
     async method1() {
-        console.log("CS_MSG1 received", this.param);
+        console.log("CS_MSG6 received", this.param);
     }
 
 }
 
-
-@WS({ getInstance: () => new SoftInjectTestController("soft") })
+@WS({getInstance: () => new SoftInjectTestController("soft")})
 export class SoftInjectTestController {
 
     constructor(public param: any) {
@@ -101,7 +102,46 @@ export class SoftInjectTestController {
      */
     @WSHandler(MSG_CODE.CS_MSG7)
     async method1() {
-        console.log("CS_MSG1 received", this.param);
+        console.log("CS_MSG7 received", this.param);
     }
 
 }
+
+@WS()
+export class InjectBTest {
+
+    word: string = "world";
+}
+
+
+@WS()
+export class InjectATest {
+
+    @WSInject(InjectBTest)
+    anotherInjectClass: InjectBTest;
+
+    get sentence() {
+        return "hello " + this.anotherInjectClass.word;
+    }
+}
+
+@WS()
+export class InjectFieldTestController {
+
+    constructor() {
+    }
+
+    @WSInject(InjectATest)
+    injectedObject: InjectATest;
+
+    /**
+     * 无参数调用的示例, 监听事件 1
+     */
+    @WSHandler(MSG_CODE.CS_MSG8)
+    async method1() {
+        console.log("CS_MSG8 received", this.injectedObject.sentence);
+    }
+
+}
+
+
