@@ -166,6 +166,8 @@ async method3(@WSParam("arg1") a: number, @WSCtx() ctx: WSContext, @WSParam("arg
 
 ## Inject
 
+### hard inject
+
 Sometimes, you may expect to create the service instance by yourself.
 In these cases, you can inject the instance into the meta table in the constructor by your self.
 
@@ -189,6 +191,30 @@ const svr = new WSvr(server, [NewService], async a => a);
 
 ```
 
+### soft inject
 
+In some another cases, the instantiate method can be a lazy-load implementation.
+You can provide `getInstance` option to inject the instances.
+
+```typescript
+@WS({ getInstance: () => new NewService("a", "b") })
+class NewService {
+
+    constructor(
+        public readonly paramA: any,
+        public readonly paramB: any
+    ){
+        WSMeta.inject(this);
+    }
+}
+
+// ...
+const svr = new WSvr(server, [NewService], async a => a);
+
+```
+
+### priority
+
+hard inject > soft inject > natural inject
 
 
