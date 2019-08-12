@@ -1,6 +1,7 @@
 import {WSMeta} from "./meta/wsMeta";
 import {ParamMeta} from "./meta/paramMeta";
 import {HandlerMeta} from "./meta/handlerMeta";
+import {InjectMeta} from "./meta/injectMeta";
 
 export interface IWSOption{
     getInstance: () => any,
@@ -10,6 +11,12 @@ export interface IWSOption{
 export function WS(option?: IWSOption) {
     return (constructor: Function) => {
         WSMeta.create(constructor, option);
+    };
+}
+
+export function WSInject(fieldConstructor: Function) {
+    return function(object: Object, propertyName: string) {
+        InjectMeta.create(object, propertyName, fieldConstructor);
     };
 }
 
