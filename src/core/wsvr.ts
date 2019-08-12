@@ -84,7 +84,7 @@ export class WSvr {
 
         try {
             if (matchedArgs.length <= 0) {
-                result = await targetInstance[handlerMeta.methodName].apply(targetInstance, [msg.data, ctx]);
+                result = await (targetInstance as any)[handlerMeta.methodName].apply(targetInstance, [msg.data, ctx]);
             } else { // using array
                 const args: any = [];
                 matchedArgs.forEach((paramMeta: ParamMeta) => {
@@ -92,7 +92,7 @@ export class WSvr {
                     args[paramMeta.index] = paramMeta.isContext ? ctx : msg.data[paramMeta.key];
                 });
                 // console.log("combined args", args);
-                result = await targetInstance[handlerMeta.methodName].apply(targetInstance, args);
+                result = await (targetInstance as any)[handlerMeta.methodName].apply(targetInstance, args);
             }
             if (handlerMeta.rspCode !== undefined) {
                 ctx.rspOK(handlerMeta.rspCode, result);
