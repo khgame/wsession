@@ -12,12 +12,12 @@ export class WSMeta {
         this.targetTable.set(targetClass, targetMeta);
     }
 
-    static inject<T>(targetClass: Function, instance: any) {
-        return this.injectTable.set(targetClass, instance);
+    static inject<T>(instance: Object, targetClass?: Function) {
+        return this.injectTable.set(targetClass ? targetClass : instance.constructor, instance);
     }
 
-    static uninject<T>(targetClass: Function, instance: any) {
-        if (this.injectTable.get(targetClass) === instance) {
+    static uninject<T>(instance: Object, targetClass?: Function) {
+        if (this.injectTable.get(targetClass ? targetClass : instance.constructor) === instance) {
             this.injectTable.delete(targetClass);
         }
     }
