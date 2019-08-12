@@ -65,6 +65,7 @@ export class Api implements IApi {
             controllers: [],
             defaultErrorHandler: false,
         });
+        new HardInjectTestController("hard");
         new WSvr(this.server,
             [TestController, HardInjectTestController, SoftInjectTestController],
             async a => a
