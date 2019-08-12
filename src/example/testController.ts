@@ -78,7 +78,7 @@ export class TestController {
 export class HardInjectTestController {
 
     constructor(public param: any) {
-        WSMeta.inject(this);
+        WSMeta.setInstance(this);
     }
 
     /**
