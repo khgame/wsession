@@ -43,7 +43,7 @@ export class WSMeta {
     get instance() {
         if (!this._instance) {
             this._instance = WSMeta.injectTable.get(this.targetClass)
-                || this.option.getInstance()
+                || (this.option && this.option.getInstance && this.option.getInstance())
                 || new (this.targetClass as any)();
         }
         return this._instance;
