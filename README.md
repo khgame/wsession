@@ -164,6 +164,30 @@ async method3(@WSParam("arg1") a: number, @WSCtx() ctx: WSContext, @WSParam("arg
 }
 ```
 
+## Inject
+
+Sometimes, you may expect to create the service instance by yourself.
+In these cases, you can inject the instance into the meta table in the constructor by your self.
+
+```typescript
+@WS()
+class NewService {
+
+    constructor(
+        public readonly paramA: any,
+        public readonly paramB: any
+    ){
+        WSMeta.inject(this);
+    }
+}
+
+const newService = new NewService("a", "b");
+
+// ...
+
+const svr = new WSvr(server, [NewService], async a => a);
+
+```
 
 
 
