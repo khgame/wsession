@@ -23,7 +23,10 @@ export function WSParam(key: string) {
 
 
 export function WSHandler(code: number, rspCode?: number) {
-    return (object: Object, methodName: string, descriptor: TypedPropertyDescriptor<Function>) => {
+    return (object: Object,
+            methodName: string,
+            descriptor: TypedPropertyDescriptor<(...arg: any[]) => Promise<any>>
+    ) => {
         HandlerMeta.create(object, methodName, code, rspCode);
     };
 }
