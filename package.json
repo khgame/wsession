@@ -1,8 +1,9 @@
 {
   "name": "wsession",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "prepublishOnly": "npm run build",
     "build": "rimraf ./lib && npx tsc",
