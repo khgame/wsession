@@ -1,6 +1,6 @@
 {
   "name": "wsession",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "WSession is a server-side websocket framework which enables creating declarative and beautifully organized class-based controllers with decorators.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
