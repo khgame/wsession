@@ -81,9 +81,6 @@ export class HardInjectTestController {
         WSMeta.setInstance(this);
     }
 
-    /**
-     * 无参数调用的示例, 监听事件 1
-     */
     @WSHandler(MSG_CODE.CS_MSG6)
     async method1() {
         console.log("CS_MSG6 received", this.param);
@@ -97,9 +94,6 @@ export class SoftInjectTestController {
     constructor(public param: any) {
     }
 
-    /**
-     * 无参数调用的示例, 监听事件 1
-     */
     @WSHandler(MSG_CODE.CS_MSG7)
     async method1() {
         console.log("CS_MSG7 received", this.param);
@@ -134,9 +128,6 @@ export class InjectFieldTestController {
     @WSInject(InjectATest)
     injectedObject: InjectATest;
 
-    /**
-     * 无参数调用的示例, 监听事件 1
-     */
     @WSHandler(MSG_CODE.CS_MSG8)
     async method1() {
         console.log("CS_MSG8 received", this.injectedObject.sentence);

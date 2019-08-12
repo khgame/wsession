@@ -65,6 +65,9 @@ WSession is a server-side websocket framework which enables creating declarative
 
 3. create a client project, and try make some messages to the app.
 
+## Decorators
+
+
 ## Examples
 
 #### Using WSHandler
@@ -164,9 +167,53 @@ async method3(@WSParam("arg1") a: number, @WSCtx() ctx: WSContext, @WSParam("arg
 }
 ```
 
-## Inject
+#### Service injection
 
-### hard inject
+You can use `@Inject` to inject services into your class.
+
+```typescript
+
+@WS()
+export class InjectBTest {
+    word: string = "world";
+}
+
+
+@WS()
+export class InjectATest {
+
+    @WSInject(InjectBTest)
+    anotherInjectClass: InjectBTest;
+
+    get sentence() {
+        return "hello " + this.anotherInjectClass.word;
+    }
+}
+
+@WS()
+export class InjectFieldTestController {
+
+    constructor() {
+    }
+
+    @WSInject(InjectATest)
+    injectedObject: InjectATest;
+
+    @WSHandler(MSG_CODE.CS_MSG8)
+    async method1() {
+        console.log("CS_MSG8 received", this.injectedObject.sentence);
+    }
+
+}
+
+```
+
+## Manually set instance
+
+WSMeta will create a instance of classes who marked by decorator `@WS()` when necessary, such as when the message arrives.
+By default, each class will be instantiated **only once**, and when instantiated, an **empty parameter list** will be passed to the constructor.
+
+### hard set instance
 
 Sometimes, you may expect to create the service instance by yourself.
 In these cases, you can inject the instance into the meta table in the constructor by your self.
@@ -191,7 +238,7 @@ const svr = new WSvr(server, [NewService], async a => a);
 
 ```
 
-### soft inject
+### soft set instance
 
 In some another cases, the instantiate method can be a lazy-load implementation.
 You can provide `getInstance` option to inject the instances.
