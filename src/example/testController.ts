@@ -1,4 +1,4 @@
-import {WS, WSCtx, WSHandler, WSParam} from "../core";
+import {WS, WSCtx, WSHandler, WSMeta, WSParam} from "../core";
 import {WSContext} from "../core";
 
 enum MSG_CODE {
@@ -7,6 +7,8 @@ enum MSG_CODE {
     CS_MSG3 = 3,
     CS_MSG4 = 4,
     CS_MSG5 = 5,
+    CS_MSG6 = 6,
+    CS_MSG7 = 7,
 
     SC_MSG4 = 14,
     SC_NOTICE = 20,
@@ -65,6 +67,41 @@ export class TestController {
         console.log("CS_MSG4 received");
         ctx.notice("hehe", MSG_CODE.SC_NOTICE, { d: "notice data", m: data.m });
         return data.m;
+    }
+
+}
+
+
+@WS()
+export class HardInjectTestController {
+
+    constructor(public param: any) {
+        WSMeta.inject(this);
+    }
+
+    /**
+     * 无参数调用的示例, 监听事件 1
+     */
+    @WSHandler(MSG_CODE.CS_MSG6)
+    async method1() {
+        console.log("CS_MSG1 received", this.param);
+    }
+
+}
+
+
+@WS({ getInstance: () => new SoftInjectTestController("soft") })
+export class SoftInjectTestController {
+
+    constructor(public param: any) {
+    }
+
+    /**
+     * 无参数调用的示例, 监听事件 1
+     */
+    @WSHandler(MSG_CODE.CS_MSG7)
+    async method1() {
+        console.log("CS_MSG1 received", this.param);
     }
 
 }
