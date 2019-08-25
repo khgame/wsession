@@ -1,5 +1,5 @@
 import {HandlerMeta} from "../meta/handlerMeta";
-import {WSContext} from "../context";
+import {WSContext} from "./context";
 import {IMsg} from "../const";
 import {ParamMeta} from "../meta/paramMeta";
 import {CAssert, CError} from "@khgame/err";

@@ -4,8 +4,7 @@ import {WSMeta} from "./meta/wsMeta";
 import {HandlerMeta} from "./meta/handlerMeta";
 import {CAssert, CError} from "@khgame/err";
 import {IMsg, MSG_STATUS} from "./const";
-import {WSContext} from "./context";
-import {Runtime} from "./runtime/runtime";
+import {WSContext, Runtime} from "./runtime";
 
 /**
  * Provides standard of message sending

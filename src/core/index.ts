@@ -1,4 +1,4 @@
 export * from "./decorator";
 export * from "./wsvr";
-export * from "./context";
+export * from "./runtime";
 export * from "./meta/wsMeta";

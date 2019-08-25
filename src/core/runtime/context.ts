@@ -1,5 +1,5 @@
-import {UserSession} from "../basic";
-import {IError, IMsg, MSG_STATUS} from "./const";
+import {UserSession} from "../../basic/index";
+import {IError, IMsg, MSG_STATUS} from "../const";
 
 export type Notice = (uid: string, code: number, msg: any) => void;
 
