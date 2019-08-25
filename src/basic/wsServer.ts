@@ -17,6 +17,13 @@ export interface IWsOptions {
     msg_queue_length?: number;
 }
 
+/**
+ * Handler the main procedure of server-side WebSocket
+ * Maintainer of user session
+ *
+ * WSServer [1]==[1] UserSessionFaction [1]==[n] UserSession
+ *
+ */
 export class WSServer<TMessage> {
 
     protected sessions: UserSessionFactory<TMessage>;

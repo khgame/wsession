@@ -3,9 +3,10 @@ import {ParamMeta} from "./meta/paramMeta";
 import {HandlerMeta} from "./meta/handlerMeta";
 import {InjectMeta} from "./meta/injectMeta";
 
-export interface IWSOption{
-    getInstance: () => any,
-    [key: string]: any,
+export interface IWSOption {
+    getInstance: () => any;
+
+    [key: string]: any;
 }
 
 export function WS(option?: IWSOption) {
@@ -15,7 +16,7 @@ export function WS(option?: IWSOption) {
 }
 
 export function WSInject(fieldConstructor: Function) {
-    return function(object: Object, propertyName: string) {
+    return function (object: Object, propertyName: string) {
         InjectMeta.create(object, propertyName, fieldConstructor);
     };
 }

@@ -1,6 +1,5 @@
 import {Server} from "http";
-import {WSServer} from "../wsServer";
-import {UserSession} from "../userSession";
+import {WSServer, UserSession} from "../basic";
 import {WSMeta} from "./meta/wsMeta";
 import {HandlerMeta} from "./meta/handlerMeta";
 import {CAssert, CError} from "@khgame/err";
@@ -8,6 +7,9 @@ import {IMsg, MSG_STATUS} from "./const";
 import {WSContext} from "./context";
 import {ParamMeta} from "./meta/paramMeta";
 
+/**
+ * Provides standard of message sending
+ */
 export class WSvr {
 
     handlers: { [code: number]: HandlerMeta; } = {};
@@ -72,6 +74,7 @@ export class WSvr {
     async call(handlerMeta: HandlerMeta, session: UserSession<any>, msg: IMsg) {
         const matchedArgs = handlerMeta.getParamMetas();
         const targetInstance = this.getTarget(handlerMeta.targetClass);
+
         // todo: assert this
         let result: any = undefined;
         const ctx = new WSContext(

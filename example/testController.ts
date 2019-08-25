@@ -1,5 +1,5 @@
-import {WSInject, WS, WSCtx, WSHandler, WSMeta, WSParam} from "../core";
-import {WSContext} from "../core";
+import {WSInject, WS, WSCtx, WSHandler, WSMeta, WSParam} from "../src/core/index";
+import {WSContext} from "../src/core/index";
 import {Inject} from "typedi";
 
 enum MSG_CODE {

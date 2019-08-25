@@ -1,4 +1,4 @@
-import {UserSession} from "../userSession";
+import {UserSession} from "../basic";
 import {IError, IMsg, MSG_STATUS} from "./const";
 
 export class WSContext {

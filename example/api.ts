@@ -5,7 +5,7 @@ import {createServer, Server} from "http";
 import {IApi, APIRunningState} from "@khgame/turtle";
 import {useContainer, useKoaServer} from "routing-controllers";
 import {Container} from "typedi";
-import {WSvr} from "../core";
+import {WSvr} from "../src/core/index";
 import {
     HardInjectTestController,
     InjectFieldTestController,
