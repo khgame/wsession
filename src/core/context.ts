@@ -1,12 +1,14 @@
 import {UserSession} from "../basic";
 import {IError, IMsg, MSG_STATUS} from "./const";
 
+export type Notice = (uid: string, code: number, msg: any) => void;
+
 export class WSContext {
 
     constructor(
         public session: UserSession<IMsg>,
         public msg: IMsg,
-        public notice: (uid: string, code: number, msg: any) => void,
+        public notice: Notice,
     ) {
     }
 
