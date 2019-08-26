@@ -44,7 +44,7 @@ export class Runtime {
 
         let result: any = undefined;
 
-        console.log(">> msg:", msg, matchedArgs.length);
+        // console.log(">> msg:", msg, matchedArgs.length);
 
         try {
             if (matchedArgs.length <= 0) {

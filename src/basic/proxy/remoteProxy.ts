@@ -40,7 +40,7 @@ export class RemoteProxy<TMessage> implements IProxy {
     }
 
     onLogOut(identity: string) {
-        return this.sessions.remove(identity);
+        return this.sessions.del(identity);
     }
 
     onMsg(identity: string, msg: any) {

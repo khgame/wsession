@@ -33,7 +33,7 @@ export class LocaleProxy<TMessage> implements IProxy {
 
     onLogOut(identity: string): void {
         this.shutdown(identity);
-        return this.sessions.remove(identity);
+        return this.sessions.del(identity);
     }
 
     onMsg(identity: string, msg: any): void {

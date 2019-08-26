@@ -1,6 +1,6 @@
 import {UserSession} from "../../basic/index";
 import {IError, IMsg, MSG_STATUS} from "../const";
-import {Session} from "../../basic/session";
+import {Session} from "../../basic/proxy";
 
 export type Notice = (uid: string, code: number, msg: any) => void;
 

@@ -24,19 +24,27 @@ export class SessionFactory<TMessage> {
 
     }
 
+    get(identity: string){
+        const session = this.sessionMap[identity];
+        if(!session) {
+            console.error(`cannot find session of identity ${identity}`);
+        }
+        return session;
+    }
+
     add(identity: string, proxy: IProxy) {
         this.sessionMap[identity] = new Session<TMessage>(identity, proxy);
     }
 
-    remove(identity: string) {
+    del(identity: string) {
         delete this.sessionMap[identity];
     }
 
     onMsg(identity: string, msg: TMessage) {
-        this.eventHandler(this.sessionMap[identity], msg);
+        this.eventHandler(this.get(identity), msg);
     }
 
     send(identity: string, msg: TMessage) {
-        return this.sessionMap[identity].proxy.send(identity, msg); // todo: assert
+        return this.get(identity).proxy.send(identity, msg); // todo: assert
     }
 }
