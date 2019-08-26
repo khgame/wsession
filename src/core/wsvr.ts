@@ -11,7 +11,7 @@ import {WSContext, Runtime} from "./runtime";
  */
 export class WSvr {
 
-    runtime: Runtime;
+    runtime: Runtime = new Runtime();
 
     assert = new CAssert();
 
