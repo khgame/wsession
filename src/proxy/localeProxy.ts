@@ -1,5 +1,5 @@
 import {Server, Socket} from "socket.io";
-import {SessionFactory} from "../basic";
+import {SessionFactory} from "./session";
 import {CLIENT_EVENTS, IProxy} from "./const";
 
 

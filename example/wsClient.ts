@@ -126,14 +126,14 @@ async function benchmark(client: WSClient) {
     client.on("message", (msg: any) => {
         rspSeq++;
     });
-    for (let i = 0; i < 10000; i++) {
+    for (let i = 0; i < 100000; i++) {
         client.emit("message", {code: 101, seq: seq++, data: data1});
     }
     console.log("t1 sent");
     await forCondition(() => rspSeq === seq);
     const t1 = Date.now() - start;
     console.log("t1", t1);
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < 10000; i++) {
         client.emit("message", {code: 101, seq: seq++, data: data2});
     }
     console.log("t2 sent");
@@ -150,7 +150,7 @@ async function benchmark(client: WSClient) {
     const t3 = Date.now() - start;
     console.log("t3", t3);
 
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 200; i++) {
         client.emit("message", {code: 101, seq: seq++, data: data4});
     }
     console.log("t4 sent");

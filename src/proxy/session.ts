@@ -1,4 +1,4 @@
-import {IProxy} from "../proxy/iProxy";
+import {IProxy} from "./index";
 
 export type SessionMsgHandler<TMessage> = (session: Session<TMessage>, message: TMessage) => void;
 

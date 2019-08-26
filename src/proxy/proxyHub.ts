@@ -1,7 +1,7 @@
 import * as http from "http";
 import {Socket, Server} from "socket.io";
 import {RemoteProxy} from "./remoteProxy";
-import {SessionFactory, SessionMsgHandler} from "../basic";
+import {SessionFactory, SessionMsgHandler} from "./session";
 import {LocaleProxy} from "./localeProxy";
 import {IProxy} from "./const";
 
@@ -55,7 +55,7 @@ export class ProxyHub<TMessage> {
             }
 
             if (query.proxy) {
-                const rProxy = RemoteProxy.create(socket, this.sessions);
+                const rProxy = RemoteProxy.create(socket, query.proxy, this.sessions);
                 this.proxies.push(rProxy);
                 console.log(`ws proxy connected, socket id : ${socket.id}, remote proxy: ${rProxy.id}`);
                 return;

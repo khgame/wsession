@@ -1,23 +1,32 @@
 import {Socket} from "socket.io";
-import {SessionFactory} from "../basic";
+import {SessionFactory} from "./session";
 import {IProxy, PROXY_EVENTS} from "./const";
-
-let proxy_id = 1;
 
 export class RemoteProxy<TMessage> implements IProxy {
 
-    id: number;
+    public static remoteProxyMap: { [id: string]: RemoteProxy<any> } = {};
 
     public static create<TMessage>(socket: Socket,
+                                   connectInfo: { id: string, identities?: string[] },
                                    sessions: SessionFactory<TMessage>) {
-        return new RemoteProxy<TMessage>(socket, sessions);
+        return new RemoteProxy<TMessage>(socket, connectInfo.id, connectInfo.identities || [], sessions);
     }
 
     constructor(
         public readonly socket: Socket,
+        public readonly id: string,
+        public readonly identities: string[],
         public readonly sessions: SessionFactory<TMessage>) {
 
-        this.id = proxy_id++;
+        if (RemoteProxy.remoteProxyMap[id]) {
+            const oldProxy = RemoteProxy.remoteProxyMap[id];
+            oldProxy.identities.forEach(
+                identity => this.sessions.del(identity)
+            );
+            // todo: remove old proxy and sync identify list
+        }
+        RemoteProxy.remoteProxyMap[id] = this;
+        this.identities.forEach(identity => this.sessions.add(identity, this));
 
         // 接受 proxy server 传来的消息
         socket.on(PROXY_EVENTS.PROXY_ON_LOGIN, (token: string) => this.onLogin(token, socket));
@@ -29,13 +38,16 @@ export class RemoteProxy<TMessage> implements IProxy {
         const identity = await this.sessions.validateToken(token);
 
         if (!identity) {
-            this.socket.emit(PROXY_EVENTS.PROXY_LOGIN_RESULT, {identity, result: "FAILED"});
+            this.socket.emit(PROXY_EVENTS.PROXY_LOGIN_RESULT, {token, identity, result: "FAILED"});
             return;
         }
 
-        this.sessions.add(identity, this);
+        if (this.identities.indexOf(identity) < 0) {
+            this.identities.push(identity);
+            this.sessions.add(identity, this); // todo: deal with removing from other proxy
+        }
 
-        socket.emit(PROXY_EVENTS.PROXY_LOGIN_RESULT, {identity, result: "SUCCESS"});
+        socket.emit(PROXY_EVENTS.PROXY_LOGIN_RESULT, {token, identity, result: "SUCCESS"});
     }
 
     onLogOut(identity: string) {
