@@ -49,7 +49,9 @@ export class WSvr {
     public async dispatch(session: UserSession<any>, msg: IMsg) {
         try {
             const ctx = new WSContext(
-                session, msg, this.sendMsg.bind(this)
+                session,
+                msg,
+                this.sendMsg.bind(this)
             );
             return await this.runtime.call(ctx, msg);
         } catch (e) {

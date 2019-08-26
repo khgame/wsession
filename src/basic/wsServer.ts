@@ -23,6 +23,7 @@ export interface IWsOptions {
  *
  * WSServer [1]==[1] UserSessionFaction [1]==[n] UserSession
  *
+ * todo: server side project using https://github.com/websockets/ws
  */
 export class WSServer<TMessage> {
 

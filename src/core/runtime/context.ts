@@ -20,6 +20,7 @@ export class WSContext {
         const rep: IMsg = {
             code,
             seq: this.msg.seq,
+            context: this.msg.context,
             data,
             status,
             error,

@@ -15,5 +15,6 @@ export interface IMsg {
     status?: MSG_STATUS;
     data?: any;
     error?: IError;
+    context?: any;
     timestamp?: number;
 }
