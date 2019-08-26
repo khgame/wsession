@@ -1,6 +1,6 @@
 {
   "name": "wsession",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "WSession is a server-side websocket framework which enables creating declarative and beautifully organized class-based controllers with decorators.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -9,8 +9,9 @@
     "build": "rimraf ./lib && npx tsc",
     "lint": "npx tslint --fix --project .",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "ex:api": "ts-node example/server.ts",
-    "ex:client": "npx ts-node example/wsClient.ts"
+    "ep:api": "ts-node example/server.ts",
+    "ep:proxy": "npx ts-node example/proxy.ts",
+    "ep:client": "npx ts-node example/wsClient.ts"
   },
   "dependencies": {
     "@khgame/err": "^0.1.0",
