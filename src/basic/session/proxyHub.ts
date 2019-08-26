@@ -51,7 +51,7 @@ export class ProxyHub<TMessage> {
         this.io.on("connection", async (socket: Socket) => {
             const query = socket.handshake.query;
             if (!query) {
-                console.error(`create connection failed: bag query`);
+                console.error(`create connection failed: bad query`);
             }
 
             if (query.proxy) {

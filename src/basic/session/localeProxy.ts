@@ -32,7 +32,7 @@ export class LocaleProxy<TMessage> implements IProxy {
     }
 
     onLogOut(identity: string): void {
-        this.sockets[identity].disconnect();
+        this.shutdown(identity);
         return this.sessions.remove(identity);
     }
 
@@ -52,7 +52,7 @@ export class LocaleProxy<TMessage> implements IProxy {
 
     shutdown(identity: string) {
         this.sockets[identity].disconnect();
-        return delete this.sockets[identity];
+        delete this.sockets[identity];
     }
 
 

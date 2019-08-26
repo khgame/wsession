@@ -1,19 +1,20 @@
 import {UserSession} from "../../basic/index";
 import {IError, IMsg, MSG_STATUS} from "../const";
+import {Session} from "../../basic/session";
 
 export type Notice = (uid: string, code: number, msg: any) => void;
 
 export class WSContext {
 
     constructor(
-        public session: UserSession<IMsg>,
+        public session: Session<any>,
         public msg: IMsg,
         public notice: Notice,
     ) {
     }
 
     public get uid() : string {
-        return this.session.uid;
+        return this.session.identity;
     }
 
     public response(code: number, data: any, status?: MSG_STATUS, error?: IError) {
@@ -26,7 +27,7 @@ export class WSContext {
             error,
             timestamp: Date.now()
         };
-        this.session.emit("message", rep);
+        this.session.send(rep);
     }
 
     public rspOK(code: number, data: any) {

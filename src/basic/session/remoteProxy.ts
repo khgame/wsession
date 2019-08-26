@@ -30,13 +30,13 @@ export class RemoteProxy<TMessage> implements IProxy {
         const identity = await this.sessions.validateToken(token);
 
         if (!identity) {
-            this.socket.emit(PROXY_EVENTS.PROXY_LOGIN_RESULT, "FAILED");
+            this.socket.emit(PROXY_EVENTS.PROXY_LOGIN_RESULT, {identity, result: "FAILED"});
             return;
         }
 
         this.sessions.add(identity, this);
 
-        socket.emit(PROXY_EVENTS.PROXY_LOGIN_RESULT, "SUCCESS");
+        socket.emit(PROXY_EVENTS.PROXY_LOGIN_RESULT, {identity, result: "SUCCESS"});
     }
 
     onLogOut(identity: string) {

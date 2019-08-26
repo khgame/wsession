@@ -1,10 +1,10 @@
 import {Server} from "http";
-import {WSServer, UserSession} from "../basic";
 import {WSMeta} from "./meta/wsMeta";
 import {HandlerMeta} from "./meta/handlerMeta";
 import {CAssert, CError} from "@khgame/err";
 import {IMsg, MSG_STATUS} from "./const";
 import {WSContext, Runtime} from "./runtime";
+import {ProxyHub, Session} from "../basic/session";
 
 /**
  * Provides standard of message sending
@@ -15,14 +15,14 @@ export class WSvr {
 
     assert = new CAssert();
 
-    wsServer: WSServer<IMsg>;
+    wsServer: ProxyHub<IMsg>;
 
     constructor(
         public readonly server: Server,
         public readonly targetConstructors: Function[],
         public readonly fnValidateToken: (token: string) => Promise<string | undefined>
     ) {
-        this.wsServer = new WSServer(server, fnValidateToken, this.dispatch.bind(this));
+        this.wsServer = new ProxyHub(server, fnValidateToken, this.dispatch.bind(this));
 
         targetConstructors
             .map(c => WSMeta.find(c))
@@ -46,7 +46,7 @@ export class WSvr {
         this.wsServer.emitToAll(rep);
     }
 
-    public async dispatch(session: UserSession<any>, msg: IMsg) {
+    public async dispatch(session: Session<any>, msg: IMsg) {
         try {
             const ctx = new WSContext(
                 session,

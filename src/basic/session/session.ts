@@ -7,6 +7,10 @@ export class Session<TMessage> {
     constructor(public readonly identity: string, public readonly proxy: IProxy) {
     }
 
+    send(msg: TMessage) {
+        this.proxy.send(this.identity, msg);
+    }
+
 }
 
 export class SessionFactory<TMessage> {
@@ -25,7 +29,7 @@ export class SessionFactory<TMessage> {
     }
 
     remove(identity: string) {
-
+        delete this.sessionMap[identity];
     }
 
     onMsg(identity: string, msg: TMessage) {
