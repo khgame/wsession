@@ -4,7 +4,8 @@ import {HandlerMeta} from "./meta/handlerMeta";
 import {CAssert, CError} from "@khgame/err";
 import {IMsg, MSG_STATUS} from "./const";
 import {WSContext, Runtime} from "./runtime";
-import {ProxyHub, Session} from "../basic/proxy";
+import {ProxyHub} from "../proxy";
+import {Session} from "../basic";
 
 /**
  * Provides standard of message sending

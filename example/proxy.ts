@@ -1,6 +1,7 @@
 import {createServer, Server} from "http";
 import {Socket} from "socket.io";
-import {EVENT_NAMES} from "../src/basic/wsServer";
+import {Error} from "tslint/lib/error";
+import {CLIENT_EVENTS} from "../src/proxy/const";
 
 export class WSProxy {
 
@@ -33,19 +34,21 @@ export class WSProxy {
         try {
             this.socket = require("socket.io-client")("http://localhost:9999", { query: { proxy: true }});
             this.on("connect", () => {
+                console.log("connect ...");
                 this._connected = true;
             });
             this.on("disconnect", () => {
+                console.log("disconnect ...");
                 this._connected = false;
             });
             this.on("prx:login_result", ({ identity, result }) => {
                 if (result === "SUCCESS") {
-                    sockets[identity].emit(EVENT_NAMES.LOGIN, "SUCCESS");
+                    sockets[identity].emit(CLIENT_EVENTS.SC_LOGIN, "SUCCESS");
                 }
             });
             this.on("prx:send", (identity, msg) => {
                 // console.log("service send", identity, msg);//, "-", sockets[identity], "-");
-                sockets[identity].emit(EVENT_NAMES.MSG, msg);
+                sockets[identity].emit(CLIENT_EVENTS.CS_MSG, msg);
             });
             this.on("prx:broadcast", (msg) => {
                 console.log("service broadcast", msg);
@@ -76,12 +79,12 @@ export class WSProxy {
             // }
             sockets[identity] = socket;
 
-            socket.on(EVENT_NAMES.MSG, (...messages: any[]) => {
+            socket.on(CLIENT_EVENTS.CS_MSG, (...messages: any[]) => {
                 // console.log("msg", messages)
                 this.emit("prx:msg", identity, ...messages);
             });
 
-            socket.on(EVENT_NAMES.DISSCONNECT, (...messages: any[]) => {
+            socket.on(CLIENT_EVENTS.CS_DISCONNECT, (...messages: any[]) => {
                 this.emit("prx:logout", identity, ...messages);
             });
 
@@ -89,7 +92,7 @@ export class WSProxy {
             //     this.sessions.remove(identity);
             // });
 
-            console.log(`client conncted: ${socket.id}, identity: ${identity}`);
+            console.log(`client connected: ${socket.id}, identity: ${identity}`);
 
         });
 

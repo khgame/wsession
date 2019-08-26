@@ -1,9 +1,9 @@
 import * as http from "http";
 import {Socket, Server} from "socket.io";
 import {RemoteProxy} from "./remoteProxy";
-import {SessionFactory, SessionMsgHandler} from "./session";
+import {SessionFactory, SessionMsgHandler} from "../basic";
 import {LocaleProxy} from "./localeProxy";
-import {IProxy} from "./proxy";
+import {IProxy} from "./const";
 
 type Port = number;
 
