@@ -5,6 +5,7 @@ import {ILRUOption, LRULst} from "./chain/lru";
 export class UserSessionFactory<TMessage> {
 
     protected sessionMap: { [uid: string]: UserSession<TMessage> } = {};
+
     protected sessionLRU: LRULst;
 
     constructor(
@@ -14,10 +15,7 @@ export class UserSessionFactory<TMessage> {
         this.sessionLRU = new LRULst(
             (session: UserSession<TMessage>) => {
                 delete this.sessionMap[session.uid];
-                if (session.socket) {
-                    session.socket.disconnect();
-                }
-                session.alive = false;
+                session.kill();
             }, {
                 ...opt,
                 ... {
@@ -41,7 +39,7 @@ export class UserSessionFactory<TMessage> {
            max_queue_length: number = -1
     ): boolean { // todo: lb ?
         this.remove(uid);
-        const session = this.sessionMap[uid] = new UserSession(this, socket, uid, handler, max_queue_length);
+        const session = this.sessionMap[uid] = new UserSession(this, socket.id, uid, handler, false, socket.handshake.address, max_queue_length);
         this.sessionLRU.push(session);
         return true; // when new session come in, evictInactive
     }

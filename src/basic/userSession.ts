@@ -13,32 +13,43 @@ export class UserSession<TMessage> extends LRUNode {
 
     msgQueue: LinkedLst<TMessage> = new LinkedLst<TMessage>();
 
-    socketId: string;
-    socketAddress: string;
-
     constructor(
         protected readonly factory: UserSessionFactory<TMessage>,
-        socket: Socket,
+        public readonly socketId: string,
         public readonly uid: string,
         public readonly msgHandler: SessionMsgHandler<TMessage>,
+        public readonly isProxy: boolean,
+        public readonly socketAddress: string,
         public readonly max_queue_length: number = -1
     ) {
         super();
         this.heartBeat();
-        this.socketId = socket.id;
-        this.socketAddress = socket.handshake.address;
     }
 
     public get survive(): boolean {
         return this.factory.io && this.factory.io.sockets && this.factory.io.sockets.sockets.hasOwnProperty(this.socketId);
     }
 
-    public get socket(): Socket {
+    private get socket(): Socket {
         return this.factory.io.sockets.sockets[this.socketId];
     }
 
     public emit(event: string | symbol, ...args: any[]): boolean {
         return this.socket.emit(event, ...args);
+    }
+
+    public kill() {
+        if (!this.socketId) {
+            throw new Error("kill session failed: socketId must exist");
+        }
+
+        if (this.isProxy) {
+            this.socket.emit("remove", this.uid); // todo: auth
+        } else {
+            this.socket.disconnect();
+        }
+
+        this.alive = false;
     }
 
     public heartBeat(): this {

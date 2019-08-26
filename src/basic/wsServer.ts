@@ -4,12 +4,14 @@ import {Socket, Server} from "socket.io";
 import {UserSessionFactory} from "./userSessionFactory";
 import {SessionMsgHandler, UserSession} from "./userSession";
 import {ILRUOption} from "./chain/lru";
+import {CError} from "@khgame/err";
 
 type Port = number;
 
 export enum EVENT_NAMES {
     LOGIN = "login",
     MSG = "message",
+    DISSCONNECT = "disconnect"
 }
 
 export interface IWsOptions {
@@ -39,6 +41,7 @@ export class WSServer<TMessage> {
 
     private mockIdSeq = 0;
 
+
     protected initial(server: http.Server | Port, opt?: IWsOptions) {
         if (!require) {
             throw new Error("Cannot load WSServer. Try to install all required dependencies: socket.io, socket-controllers");
@@ -53,43 +56,73 @@ export class WSServer<TMessage> {
 
         this.io.on("connection", async (socket: Socket) => {
             console.log(`ws connected, socket id : ${socket.id}`);
-
-            const token = socket.handshake.query.token; // get this from your login server.
-
-            let uid = await this.validateToken(token);
-
-            if (!uid) {
-                socket.emit(EVENT_NAMES.LOGIN, "FAILED");
-                uid = `mock_uid_${this.mockIdSeq++}`;
-            }
-
-            if (!this.sessions.create(socket, uid, this.eventHandler,
-                    opt ? opt.msg_queue_length : -1
-                )
-            ) { // todo
-                socket.disconnect();
-                console.error(`try create session of uid ${uid} failed`);
-                return;
-            }
-            const session = this.sessions.get(uid);
-            socket.emit(EVENT_NAMES.LOGIN, "SUCCESS");
-
-            socket.on(EVENT_NAMES.MSG, (...messages: any[]) => {
-                session.onMessage(messages);
-                this.sessions.heartBeat(uid);
-                // this.sessions.get(uid).emit("heartbeat"); // todo: test client behavior
-            });
-
-            socket.on("disconnect", (message: string) => {
-                this.sessions.remove(uid);
-            });
-
-            console.log(`ws connected, socket id : ${socket.id}`);
+            return await this.onConn(socket, socket.handshake.query, opt);
         });
 
         return this.io;
     }
 
+    protected async onProxyConn(socket: Socket, proxyName: string, opt?: IWsOptions ){
+
+    }
+
+    protected async onUserConn(socket: Socket, proxyName: string, opt?: IWsOptions ){
+
+    }
+
+    protected async onConn(socket: Socket, query: any, opt?: IWsOptions) {
+
+        let identity: string;
+        /** proxy login */
+        if (query.proxy) {
+            identity = query.proxy.name;
+        }
+        /** user login */
+        else if (query.token) {
+            const token = query.token; // get this from your login server.
+            identity = await this.validateToken(token);
+
+            if (!identity) {
+                socket.emit(EVENT_NAMES.LOGIN, "FAILED");
+                identity = `mock_identity_${this.mockIdSeq++}`;
+            }
+        } else {
+            throw new Error(`onConn failed: invalid query => ${query}`);
+        }
+
+        let sessionCreated = this.sessions.create(socket, identity, this.eventHandler, opt ? opt.msg_queue_length : -1);
+
+        if (!sessionCreated) { // todo
+            socket.disconnect();
+            console.error(`try create session of identity ${identity} failed`);
+            return;
+        }
+
+        const session = this.sessions.get(identity);
+
+        socket.emit(EVENT_NAMES.LOGIN, "SUCCESS");
+
+        socket.on(EVENT_NAMES.MSG, (...messages: any[]) => {
+            session.onMessage(messages);
+            this.sessions.heartBeat(identity);
+            // this.sessions.get(identity).emit("heartbeat"); // todo: test client behavior
+        });
+
+        socket.on(EVENT_NAMES.DISSCONNECT, (message: string) => {
+            this.sessions.remove(identity);
+        });
+
+        // socket.on("proxy", (message: string) => {
+        //     this.sessions.remove(identity);
+        // });
+
+        console.log(`ws connected, socket id: ${socket.id}, identity: ${identity}, query: ${query}`);
+
+    }
+
+
+
+    // todo: wsServer 的 emit 到底发给谁? uid -> proxy
     public emit(uid: string, message: any): this {
         const session = this.sessions.get(uid);
         if (!session) {
@@ -109,7 +142,7 @@ export class WSServer<TMessage> {
         return this;
     }
 
-    public getConnectCount(){
+    public getConnectCount() {
         return this.sessions.getConnectCount();
     }
 
