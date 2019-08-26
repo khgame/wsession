@@ -12,8 +12,12 @@ enum MSG_CODE {
     CS_MSG7 = 7,
     CS_MSG8 = 8,
 
+
     SC_MSG4 = 14,
     SC_NOTICE = 20,
+
+    CS_BENCHMARK = 101,
+    SC_BENCHMARK = 102,
 }
 
 @WS()
@@ -67,7 +71,7 @@ export class TestController {
     @WSHandler(MSG_CODE.CS_MSG5)
     async method5(data: { m: string }, ctx: WSContext) {
         console.log("CS_MSG5 received");
-        ctx.notice("hehe", MSG_CODE.SC_NOTICE, {d: "notice data", m: data.m});
+        ctx.notice("c2", MSG_CODE.SC_NOTICE, {d: "notice data", m: data.m});
         return data.m;
     }
 
@@ -131,6 +135,22 @@ export class InjectFieldTestController {
     @WSHandler(MSG_CODE.CS_MSG8)
     async method1() {
         console.log("CS_MSG8 received", this.injectedObject.sentence);
+    }
+
+}
+
+@WS()
+export class BenchmarkTestController {
+
+    constructor() {
+    }
+
+    @WSInject(InjectATest)
+    injectedObject: InjectATest;
+
+    @WSHandler(MSG_CODE.CS_BENCHMARK, MSG_CODE.SC_BENCHMARK)
+    async method1() {
+        // console.log("CS_MSG8 received", this.injectedObject.sentence);
     }
 
 }

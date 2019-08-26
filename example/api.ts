@@ -7,6 +7,7 @@ import {useContainer, useKoaServer} from "routing-controllers";
 import {Container} from "typedi";
 import {WSvr} from "../src/core/index";
 import {
+    BenchmarkTestController,
     HardInjectTestController,
     InjectFieldTestController,
     SoftInjectTestController,
@@ -72,7 +73,7 @@ export class Api implements IApi {
         });
         new HardInjectTestController("hard");
         new WSvr(this.server,
-            [TestController, HardInjectTestController, SoftInjectTestController, InjectFieldTestController],
+            [TestController, HardInjectTestController, SoftInjectTestController, InjectFieldTestController, BenchmarkTestController],
             async a => a
         );
         this.runningState = APIRunningState.PREPARED;
