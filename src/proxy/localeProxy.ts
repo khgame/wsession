@@ -23,7 +23,7 @@ export class LocaleProxy<TMessage> implements IProxy {
             this.sessions.heartbeat(identity);
             this.onMsg(identity, msg);
         });
-        socket.on(CLIENT_EVENTS.CS_DISCONNECT, () => this.onLogOut(identity)); // todo: can u do this?
+        socket.on(CLIENT_EVENTS.CS_DISCONNECT, async () => this.onLogOut(identity)); // todo: can u do this?
 
         this.sockets[identity] = socket;
         this.sessions.add(identity, this);
@@ -31,7 +31,7 @@ export class LocaleProxy<TMessage> implements IProxy {
         socket.emit(CLIENT_EVENTS.SC_LOGIN, "SUCCESS");
     }
 
-    onLogOut(identity: string): void {
+    onLogOut(identity: string): Promise<any> {
         this.shutdown(identity);
         return this.sessions.del(identity);
     }

@@ -35,7 +35,8 @@ export class SessionFactory<TMessage> {
 
     constructor(
         public readonly validateToken: (token: string) => Promise<string>,
-        public readonly eventHandler: SessionMsgHandler<TMessage>
+        public readonly onMsgHandler: SessionMsgHandler<TMessage>,
+        public readonly onLogoutHandler: (identity: string) => Promise<void>,
     ) {
 
     }
@@ -52,21 +53,36 @@ export class SessionFactory<TMessage> {
         this.sessionMap[identity] = new Session<TMessage>(identity, proxy);
     }
 
-    del(identity: string) {
+    async del(identity: string): Promise<any> {
+        const session = this.sessionMap[identity];
+        if (!session) {
+            return;
+        }
         delete this.sessionMap[identity];
+        if (this.onLogoutHandler) {
+            return await Promise.resolve(this.onLogoutHandler(session.identity));
+        } else {
+            return true;
+        }
     }
 
     onMsg(identity: string, msg: TMessage) {
-        this.eventHandler(this.get(identity), msg);
+        this.onMsgHandler(this.get(identity), msg);
     }
 
     send(identity: string, msg: TMessage) {
-        return this.get(identity).proxy.send(identity, msg); // todo: assert
+        const session = this.get(identity);
+        if (!session) {
+            return;
+        }
+        return session.proxy.send(identity, msg); // todo: assert
     }
 
     heartbeat(identity: string) {
         const session = this.get(identity);
-        if (!session) { return; }
+        if (!session) {
+            return;
+        }
         session.heartbeat();
     }
 }

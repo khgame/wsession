@@ -1,7 +1,7 @@
 import {createServer, Server} from "http";
 import {Socket} from "socket.io";
 import {Error} from "tslint/lib/error";
-import {CLIENT_EVENTS} from "../src/proxy/const";
+import {CLIENT_EVENTS} from "../src/proxy";
 
 export class WSProxy {
 
@@ -32,9 +32,9 @@ export class WSProxy {
         const sockets: any = {};
 
         try {
-            this.socket = require("socket.io-client")("http://localhost:9999", {
+            this.socket = require("socket.io-client")("http://localhost:9999", { // todo: get identities when reconnect
                     query: {
-                        proxy: JSON.stringify({id: "123"})
+                        proxy: JSON.stringify({id: "123", identities: Object.keys(sockets)}),
                     }
                 });
             this.on("connect", () => {

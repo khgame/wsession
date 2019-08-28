@@ -74,7 +74,8 @@ export class Api implements IApi {
         new HardInjectTestController("hard");
         new WSvr(this.server,
             [TestController, HardInjectTestController, SoftInjectTestController, InjectFieldTestController, BenchmarkTestController],
-            async a => a
+            async a => a,
+            async identity => console.log("session logout => ", identity)
         );
         this.runningState = APIRunningState.PREPARED;
     }

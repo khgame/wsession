@@ -25,7 +25,9 @@ export class ProxyHub<TMessage> {
 
     constructor(server: http.Server | Port,
                 public readonly validateToken: (token: string) => Promise<string | undefined>,
-                public readonly eventHandler: SessionMsgHandler<TMessage>) {
+                public readonly onMsgHander: SessionMsgHandler<TMessage>,
+                public readonly onLogoutHander: (identity: string) => Promise<void>
+    ) {
         this.initial(server);
     }
 
@@ -38,7 +40,8 @@ export class ProxyHub<TMessage> {
             this.io = require("socket.io")(server);
             this.sessions = new SessionFactory(
                 this.validateToken,
-                this.eventHandler
+                this.onMsgHander,
+                this.onLogoutHander
             );
         } catch (e) {
             throw new Error("socket.io package was not found installed. Try to install it: npm install socket.io --save");
@@ -57,12 +60,12 @@ export class ProxyHub<TMessage> {
             if (query.proxy) {
                 const rProxy = RemoteProxy.create(socket, JSON.parse(query.proxy), this.sessions);
                 this.proxies.push(rProxy);
-                console.log(`ws proxy connected, socket-id: ${socket.id}, proxy-id: ${rProxy.id}`);
+                console.log(`ws proxy connected, socket-id: ${socket.id}, proxy-id: ${rProxy.id}, identities: ${rProxy.identities}`);
                 return;
             }
 
             await lProxy.onLogin(query.token, socket);
-            console.log(`ws client connected, socket-id: ${socket.id}, token: ${query.token}`);
+            console.log(`ws client connected, socket-id: ${socket.id}, token: ${query.token}, proxy local`);
 
 
         });
