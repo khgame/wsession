@@ -4,12 +4,28 @@ export type SessionMsgHandler<TMessage> = (session: Session<TMessage>, message: 
 
 export class Session<TMessage> {
 
-    constructor(public readonly identity: string, public readonly proxy: IProxy) {
+    heartbeat_at: number;
+
+    constructor(
+        public readonly identity: string,
+        public readonly proxy: IProxy,
+        public readonly ttlMs: number = 0,
+    ) {
+        this.heartbeat();
+    }
+
+    get expired() {
+        return this.ttlMs <= 0 || this.heartbeat_at + this.ttlMs > Date.now();
+    }
+
+    heartbeat() {
+        this.heartbeat_at = Date.now();
     }
 
     send(msg: TMessage) {
         this.proxy.send(this.identity, msg);
     }
+
 
 }
 
@@ -24,9 +40,9 @@ export class SessionFactory<TMessage> {
 
     }
 
-    get(identity: string){
+    get(identity: string) {
         const session = this.sessionMap[identity];
-        if(!session) {
+        if (!session) {
             console.error(`cannot find session of identity ${identity}`);
         }
         return session;
@@ -46,5 +62,11 @@ export class SessionFactory<TMessage> {
 
     send(identity: string, msg: TMessage) {
         return this.get(identity).proxy.send(identity, msg); // todo: assert
+    }
+
+    heartbeat(identity: string) {
+        const session = this.get(identity);
+        if (!session) { return; }
+        session.heartbeat();
     }
 }

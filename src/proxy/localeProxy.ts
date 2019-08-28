@@ -2,8 +2,6 @@ import {Server, Socket} from "socket.io";
 import {SessionFactory} from "./session";
 import {CLIENT_EVENTS, IProxy} from "./const";
 
-
-
 export class LocaleProxy<TMessage> implements IProxy {
 
     constructor(
@@ -21,7 +19,10 @@ export class LocaleProxy<TMessage> implements IProxy {
             return;
         }
 
-        socket.on(CLIENT_EVENTS.CS_MSG, (msg: TMessage) => this.onMsg(identity, msg));
+        socket.on(CLIENT_EVENTS.CS_MSG, (msg: TMessage) => {
+            this.sessions.heartbeat(identity);
+            this.onMsg(identity, msg);
+        });
         socket.on(CLIENT_EVENTS.CS_DISCONNECT, () => this.onLogOut(identity)); // todo: can u do this?
 
         this.sockets[identity] = socket;

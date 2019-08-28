@@ -31,7 +31,10 @@ export class RemoteProxy<TMessage> implements IProxy {
         // 接受 proxy server 传来的消息
         socket.on(PROXY_EVENTS.PROXY_ON_LOGIN, (token: string) => this.onLogin(token, socket));
         socket.on(PROXY_EVENTS.PROXY_ON_LOGOUT, this.onLogOut.bind(this));
-        socket.on(PROXY_EVENTS.PROXY_ON_MSG, this.onMsg.bind(this));
+        socket.on(PROXY_EVENTS.PROXY_ON_MSG, (identity: string, msg: any) => {
+            this.sessions.heartbeat(identity);
+            this.onMsg(identity, msg);
+        });
     }
 
     async onLogin(token: string, socket: Socket) {

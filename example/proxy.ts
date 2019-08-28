@@ -53,7 +53,7 @@ export class WSProxy {
             this.on("prx:broadcast", (msg) => {
                 console.log("service broadcast", msg);
             });
-            this.on("prx:shutdown", (identity) => {
+            this.on("prx:shutdown", (identity) => { // todo: test shutdown => logout
                 console.log("service shutdown", identity);
             });
         } catch (e) {
