@@ -55,14 +55,14 @@ export class ProxyHub<TMessage> {
             }
 
             if (query.proxy) {
-                const rProxy = RemoteProxy.create(socket, query.proxy, this.sessions);
+                const rProxy = RemoteProxy.create(socket, JSON.parse(query.proxy), this.sessions);
                 this.proxies.push(rProxy);
-                console.log(`ws proxy connected, socket id : ${socket.id}, remote proxy: ${rProxy.id}`);
+                console.log(`ws proxy connected, socket-id: ${socket.id}, proxy-id: ${rProxy.id}`);
                 return;
             }
 
             await lProxy.onLogin(query.token, socket);
-            console.log(`ws proxy connected, socket id : ${socket.id}, locale proxy`);
+            console.log(`ws client connected, socket-id: ${socket.id}, token: ${query.token}`);
 
 
         });

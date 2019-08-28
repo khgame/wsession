@@ -29,10 +29,14 @@ export class WSProxy {
         }
 
 
-        const sockets : any = {};
+        const sockets: any = {};
 
         try {
-            this.socket = require("socket.io-client")("http://localhost:9999", { query: { proxy: true }});
+            this.socket = require("socket.io-client")("http://localhost:9999", {
+                    query: {
+                        proxy: JSON.stringify({id: "123"})
+                    }
+                });
             this.on("connect", () => {
                 console.log("connect ...");
                 this._connected = true;
@@ -41,7 +45,7 @@ export class WSProxy {
                 console.log("disconnect ...");
                 this._connected = false;
             });
-            this.on("prx:login_result", ({ identity, result }) => {
+            this.on("prx:login_result", ({identity, result}) => {
                 if (result === "SUCCESS") {
                     sockets[identity].emit(CLIENT_EVENTS.SC_LOGIN, "SUCCESS");
                 }
@@ -97,7 +101,6 @@ export class WSProxy {
         });
 
         console.log("initialed");
-
 
 
         return this;

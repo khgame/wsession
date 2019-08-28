@@ -1,6 +1,6 @@
 import {Socket} from "socket.io";
 import {SessionFactory} from "./session";
-import {IProxy, PROXY_EVENTS} from "./const";
+import {CLIENT_EVENTS, IProxy, PROXY_EVENTS} from "./const";
 
 export class RemoteProxy<TMessage> implements IProxy {
 
@@ -34,6 +34,10 @@ export class RemoteProxy<TMessage> implements IProxy {
         socket.on(PROXY_EVENTS.PROXY_ON_MSG, (identity: string, msg: any) => {
             this.sessions.heartbeat(identity);
             this.onMsg(identity, msg);
+        });
+
+        socket.on(CLIENT_EVENTS.CS_DISCONNECT, () => {
+            console.log(`proxy ${this.id} - ${this.socket.id} disconnect ...`);
         });
     }
 
