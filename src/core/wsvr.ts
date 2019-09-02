@@ -36,11 +36,14 @@ export class WSvr {
             .forEach(this.runtime.addHandler.bind(this.runtime));
     }
 
-    public sendMsg(uid: string, code: number, data: any) {
+    public sendMsg(uid: string, code: number, data: any, cbError?: (identity: string, msg: IMsg) => any) {
         const rep: IMsg = {
             code, data, status: MSG_STATUS.ok, timestamp: Date.now()
         };
-        this.wsServer.emit(uid, rep);
+        const result = this.wsServer.emit(uid, rep);
+        if (!result && cbError) {
+            cbError(uid, rep);
+        }
     }
 
     public sendMsgToAll(code: number, data: any) {

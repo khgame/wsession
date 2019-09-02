@@ -1,29 +1,39 @@
 import {Server, Socket} from "socket.io";
-import {SessionFactory} from "./session";
-import {CLIENT_EVENTS, IProxy} from "./const";
+import {CLIENT_EVENTS} from "./const";
+import {SessionFactory} from "./sessionFactory";
+import {SessionMsgHandler} from "./session";
+import {ProxyBase} from "./proxyBase";
 
-export class LocaleProxy<TMessage> implements IProxy {
+/**
+ *
+ */
+export class LocaleProxy<TMessage> extends ProxyBase<TMessage> {
 
     constructor(
         public readonly io: Server,
-        public readonly sessions: SessionFactory<TMessage>) {
+        public readonly sessions: SessionFactory<TMessage>,
+        onMsgHandler: SessionMsgHandler<TMessage>,
+        onLogoutHandler: (identity: string) => Promise<void>,
+        public readonly validateToken: (token: string) => Promise<string | undefined>
+        ) {
+        super(onMsgHandler, onLogoutHandler);
     }
 
     sockets: { [identity: string]: Socket } = {};
 
-    async onLogin(token: string, socket: Socket): Promise<void> {
-        const identity = await this.sessions.validateToken(token);
+    async onClientLogin(token: string, socket: Socket): Promise<void> {
+        const identity = await this.validateToken(token);
 
         if (!identity) {
             socket.emit(CLIENT_EVENTS.SC_LOGIN, "FAILED");
             return;
         }
 
-        socket.on(CLIENT_EVENTS.CS_MSG, (msg: TMessage) => {
+        socket.on(CLIENT_EVENTS.MSG, (msg: TMessage) => {
             this.sessions.heartbeat(identity);
-            this.onMsg(identity, msg);
+            this.onClientMsgIn(identity, msg);
         });
-        socket.on(CLIENT_EVENTS.CS_DISCONNECT, async () => this.onLogOut(identity)); // todo: can u do this?
+        socket.on(CLIENT_EVENTS.DISCONNECT, async () => this.onClientLogout(identity)); // todo: can u do this?
 
         this.sockets[identity] = socket;
         this.sessions.add(identity, this);
@@ -31,22 +41,13 @@ export class LocaleProxy<TMessage> implements IProxy {
         socket.emit(CLIENT_EVENTS.SC_LOGIN, "SUCCESS");
     }
 
-    onLogOut(identity: string): Promise<any> {
-        this.shutdown(identity);
-        return this.sessions.del(identity);
-    }
-
-    onMsg(identity: string, msg: any): void {
-        return this.sessions.onMsg(identity, msg);
-    }
-
     send(identity: string, msg: any) {
-        this.sockets[identity].emit(CLIENT_EVENTS.CS_MSG, msg);
+        this.sockets[identity].emit(CLIENT_EVENTS.MSG, msg);
         return true;
     }
 
     broadcast(msg: any) {
-        this.io.emit(CLIENT_EVENTS.CS_MSG, msg);
+        this.io.emit(CLIENT_EVENTS.MSG, msg);
         return true;
     }
 

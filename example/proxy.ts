@@ -52,7 +52,7 @@ export class WSProxy {
             });
             this.on("prx:send", (identity, msg) => {
                 // console.log("service send", identity, msg);//, "-", sockets[identity], "-");
-                sockets[identity].emit(CLIENT_EVENTS.CS_MSG, msg);
+                sockets[identity].emit(CLIENT_EVENTS.MSG, msg);
             });
             this.on("prx:broadcast", (msg) => {
                 console.log("service broadcast", msg);
@@ -83,12 +83,12 @@ export class WSProxy {
             // }
             sockets[identity] = socket;
 
-            socket.on(CLIENT_EVENTS.CS_MSG, (...messages: any[]) => {
+            socket.on(CLIENT_EVENTS.MSG, (...messages: any[]) => {
                 // console.log("msg", messages)
                 this.emit("prx:msg", identity, ...messages);
             });
 
-            socket.on(CLIENT_EVENTS.CS_DISCONNECT, (...messages: any[]) => {
+            socket.on(CLIENT_EVENTS.DISCONNECT, (...messages: any[]) => {
                 this.emit("prx:logout", identity, ...messages);
             });
 

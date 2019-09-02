@@ -1,19 +1,3 @@
-import {Socket} from "socket.io";
-
-export interface IProxy {
-    onLogin(token: string, socket: Socket): Promise<void>;
-
-    onLogOut(identity: string): void;
-
-    onMsg(identity: string, msg: any): void;
-
-    send(identity: string, msg: any): void;
-
-    broadcast(msg: any): void;
-
-    shutdown(identity: string): void;
-}
-
 export enum PROXY_EVENTS {
     PROXY_ON_LOGIN = "prx:login",
     PROXY_ON_LOGOUT = "prx:logout",
@@ -26,9 +10,8 @@ export enum PROXY_EVENTS {
 }
 
 export enum CLIENT_EVENTS {
-    CS_MSG = "message",
-    CS_DISCONNECT = "disconnect",
-
+    MSG = "message",
+    DISCONNECT = "disconnect",
     SC_LOGIN = "login",
 }
 

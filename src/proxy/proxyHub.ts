@@ -1,9 +1,10 @@
 import * as http from "http";
 import {Socket, Server} from "socket.io";
 import {RemoteProxy} from "./remoteProxy";
-import {SessionFactory, SessionMsgHandler} from "./session";
+import {SessionMsgHandler} from "./session";
+import {SessionFactory} from "./sessionFactory";
 import {LocaleProxy} from "./localeProxy";
-import {IProxy} from "./const";
+import {IProxy} from "./proxyBase";
 
 type Port = number;
 
@@ -38,17 +39,19 @@ export class ProxyHub<TMessage> {
 
         try {
             this.io = require("socket.io")(server);
-            this.sessions = new SessionFactory(
-                this.validateToken,
-                this.onMsgHander,
-                this.onLogoutHander
-            );
+            this.sessions = new SessionFactory();
         } catch (e) {
             throw new Error("socket.io package was not found installed. Try to install it: npm install socket.io --save");
         }
 
         /** create locale proxy */
-        const lProxy = new LocaleProxy(this.io, this.sessions);
+        const lProxy = new LocaleProxy(
+            this.io,
+            this.sessions,
+            this.onMsgHander,
+            this.onLogoutHander,
+            this.validateToken
+        );
         this.proxies.push(lProxy);
 
         this.io.on("connection", async (socket: Socket) => {
@@ -58,27 +61,36 @@ export class ProxyHub<TMessage> {
             }
 
             if (query.proxy) {
-                const rProxy = RemoteProxy.create(socket, JSON.parse(query.proxy), this.sessions);
+                const rProxy = RemoteProxy.create(
+                    socket,
+                    JSON.parse(query.proxy),
+                    this.sessions,
+                    this.onMsgHander,
+                    this.onLogoutHander,
+                    this.validateToken
+                );
                 this.proxies.push(rProxy);
                 console.log(`ws proxy connected, socket-id: ${socket.id}, proxy-id: ${rProxy.id}, identities: ${rProxy.identities}`);
                 return;
             }
 
-            await lProxy.onLogin(query.token, socket);
+            await lProxy.onClientLogin(query.token, socket);
             console.log(`ws client connected, socket-id: ${socket.id}, token: ${query.token}, proxy local`);
 
 
         });
-
-
         // todo: maintain proxy
 
         return this.io;
     }
 
-    public emit(uid: string, message: any): this {
-        this.sessions.send(uid, message);
-        return this;
+    public emit(uid: string, message: any): boolean {
+        const session = this.sessions.get(uid);
+        if (!session) {
+            return false;
+        }
+        session.send(message);
+        return true;
     }
 
     public emitToAll(msg: any): this {
