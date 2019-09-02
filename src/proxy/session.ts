@@ -14,8 +14,8 @@ export class Session<TMessage> {
         this.heartbeat();
     }
 
-    get expired() {
-        return this.ttlMs <= 0 || this.heartbeat_at + this.ttlMs > Date.now();
+    expired(now?: number) {
+        return this.ttlMs <= 0 || this.heartbeat_at + this.ttlMs > (now || Date.now());
     }
 
     heartbeat() {
@@ -27,6 +27,7 @@ export class Session<TMessage> {
     }
 
     disconnect() {
+        console.log(`ws disconnect: ${this.identity}`);
         this.proxy.shutdown(this.identity);
     }
 }

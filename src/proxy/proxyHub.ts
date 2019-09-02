@@ -5,6 +5,7 @@ import {SessionMsgHandler} from "./session";
 import {SessionFactory} from "./sessionFactory";
 import {LocaleProxy} from "./localeProxy";
 import {IProxy} from "./proxyBase";
+import {forMs} from "kht";
 
 type Port = number;
 
@@ -27,19 +28,20 @@ export class ProxyHub<TMessage> {
     constructor(server: http.Server | Port,
                 public readonly validateToken: (token: string) => Promise<string | undefined>,
                 public readonly onMsgHander: SessionMsgHandler<TMessage>,
-                public readonly onLogoutHander: (identity: string) => Promise<void>
+                public readonly onLogoutHander: (identity: string) => Promise<void>,
+                sessionTTLMs: number = 0,
     ) {
+        this.sessions = new SessionFactory(sessionTTLMs);
         this.initial(server);
     }
 
-    protected initial(server: http.Server | Port) {
+    private initial(server: http.Server | Port) {
         if (!require) {
             throw new Error("Cannot load WSServer. Try to install all required dependencies: socket.io, socket-controllers");
         }
 
         try {
             this.io = require("socket.io")(server);
-            this.sessions = new SessionFactory();
         } catch (e) {
             throw new Error("socket.io package was not found installed. Try to install it: npm install socket.io --save");
         }
@@ -81,7 +83,17 @@ export class ProxyHub<TMessage> {
         });
         // todo: maintain proxy
 
+        this.checkExpire().then(() => console.error("ws error:  unexpected exit procedure of expiration procedure."));
+
         return this.io;
+    }
+
+
+    private async checkExpire() {
+        while (true) {
+            await forMs(600 * 1000); // check health every 10 minutes, todo: config this
+            await this.sessions.checkExpire();
+        }
     }
 
     public emit(uid: string, message: any): boolean {
@@ -97,4 +109,7 @@ export class ProxyHub<TMessage> {
         this.proxies.forEach((p: IProxy) => p.broadcast(msg));
         return this;
     }
+
+
+
 }

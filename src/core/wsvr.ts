@@ -22,10 +22,14 @@ export class WSvr {
         public readonly targetConstructors: Function[],
         public readonly fnValidateToken: (token: string) => Promise<string | undefined>,
         public readonly fnClearCache: (identity: string) => Promise<any>,
+        sessionTTLMs: number = 0,
     ) {
-        this.wsServer = new ProxyHub(server, fnValidateToken,
+        this.wsServer = new ProxyHub(
+            server,
+            fnValidateToken,
             this.dispatch.bind(this),
-            fnClearCache
+            fnClearCache,
+            sessionTTLMs
         );
 
         targetConstructors

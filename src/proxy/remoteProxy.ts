@@ -102,4 +102,6 @@ export class RemoteProxy<TMessage> extends ProxyBase<TMessage> {
     shutdown(identity: string) {
         return this.socket.emit(PROXY_EVENTS.PROXY_SHUTDOWN, identity); // send this to proxy, can then proxy must response PROXY_ON_LOGOUT
     }
+
+
 }
