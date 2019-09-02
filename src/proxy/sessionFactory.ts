@@ -41,8 +41,12 @@ export class SessionFactory<TMessage> {
         session.heartbeat();
     }
 
+    get identities() {
+        return Object.keys(this.sessionMap);
+    }
+
     async checkExpire() { // todo: using lru
-        const identities = Object.keys(this.sessionMap);
+        const identities = this.identities;
         const now = Date.now();
         for (let i = 0; i < identities.length; i++) {
             const identity = identities[i];

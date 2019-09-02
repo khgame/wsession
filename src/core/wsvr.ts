@@ -12,10 +12,7 @@ import {ProxyHub, Session} from "../proxy";
 export class WSvr {
 
     runtime: Runtime = new Runtime();
-
-    assert = new CAssert();
-
-    wsServer: ProxyHub<IMsg>;
+    proxyHub: ProxyHub<IMsg>;
 
     constructor(
         public readonly server: Server,
@@ -24,7 +21,7 @@ export class WSvr {
         public readonly fnClearCache: (identity: string) => Promise<any>,
         sessionTTLMs: number = 0,
     ) {
-        this.wsServer = new ProxyHub(
+        this.proxyHub = new ProxyHub(
             server,
             fnValidateToken,
             this.dispatch.bind(this),
@@ -44,7 +41,7 @@ export class WSvr {
         const rep: IMsg = {
             code, data, status: MSG_STATUS.ok, timestamp: Date.now()
         };
-        const result = this.wsServer.emit(uid, rep);
+        const result = this.proxyHub.emit(uid, rep);
         if (!result && cbError) {
             cbError(uid, rep);
         }
@@ -54,7 +51,7 @@ export class WSvr {
         const rep: IMsg = {
             code, data, status: MSG_STATUS.ok, timestamp: Date.now()
         };
-        this.wsServer.emitToAll(rep);
+        this.proxyHub.emitToAll(rep);
     }
 
     public async dispatch(session: Session<any>, msg: IMsg) {

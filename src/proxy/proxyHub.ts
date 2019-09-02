@@ -23,7 +23,7 @@ export class ProxyHub<TMessage> {
 
     protected proxies: IProxy[] = [];
 
-    protected sessions: SessionFactory<TMessage>;
+    public readonly sessions: SessionFactory<TMessage>;
 
     constructor(server: http.Server | Port,
                 public readonly validateToken: (token: string) => Promise<string | undefined>,
