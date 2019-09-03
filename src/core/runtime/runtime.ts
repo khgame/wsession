@@ -46,21 +46,22 @@ export class Runtime {
 
         // console.log(">> msg:", msg, matchedArgs.length);
 
+        const targetMethod = targetInstance[handlerMeta.methodName];
         try {
             if (matchedArgs.length <= 0) {
-                result = await targetInstance[handlerMeta.methodName].apply(targetInstance, [msg.data, ctx]);
+                result = await targetMethod.apply(targetInstance, [msg.data, ctx]);
             } else { // using array
                 const args: any = [];
                 matchedArgs.forEach((paramMeta: ParamMeta) => {
                     args[paramMeta.index] = paramMeta.isContext ? ctx : msg.data[paramMeta.key];
                 });
-                result = await targetInstance[handlerMeta.methodName].apply(targetInstance, args);
+                result = await targetMethod.apply(targetInstance, args);
             }
             if (handlerMeta.rspCode !== undefined) {
                 ctx.rspOK(handlerMeta.rspCode, result);
             }
         } catch (error) {
-            console.log("wsvr.call error: ", error);
+            console.error("wsvr.call error:", error, "stack:", error.stack);
             if (handlerMeta.rspCode !== undefined) {
                 let errorCode: any = 500;
                 if (error instanceof CError) {
